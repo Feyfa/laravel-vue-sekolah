@@ -27,7 +27,7 @@ class StudentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama' => ['required', 'string'],
-            'email' => ['required', 'email'],
+            'email' => ['required', 'email', 'unique:students'],
             'tanggal_lahir' => ['required', 'date'],
             'jenis_kelamin' => ['required', 'string', 'in:Laki-Laki,Perempuan'],
             'kelas' => ['required', 'string', 'in:Satu,Dua,Tiga,Empat,Lima,Enam'],
