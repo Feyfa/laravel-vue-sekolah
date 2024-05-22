@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-20">
+  <div class="mt-20 w-[95%] mx-auto">
 
     <!-- alert custom -->
     <div v-if="alert.message" class="border border-neutral-500 rounded shadow-lg fixed top-20 right-8 flex justify-between items-center gap-8 z-50 min-w-72 p-2.5 alert" :class="{'bg-green-500': alert.status === 'success', 'bg-red-500': alert.status === 'error'}">
@@ -15,17 +15,22 @@
 
 
 
+    <div class="w-full flex justify-between mb-2">
+      <input 
+        placeholder="seacrh" 
+        type="text" 
+        class="border border-neutral-500 rounded outline-none py-1 px-1.5"
+        @keyup.enter="searchStudent">
+      <button 
+        type="submit" 
+        class="w-24 py-1 bg-gray-200 border border-neutral-300 rounded shadow-sm transition-all duration-100 ease-in-out hover:bg-gray-300 hover:scale-105 hover:shadow"
+        @click="isClickButtonTambah = true">
+        Tambah
+      </button>
+    </div>
+
     <!-- form untuk menambahkan student -->
-    <form class="w-[95%] mx-auto mb-5" @submit.prevent="">
-      <div class="text-end mb-2">
-        <button 
-          type="submit" 
-          class="w-24 py-1 bg-gray-200 border border-neutral-300 rounded shadow-sm transition-all duration-100 ease-in-out hover:bg-gray-300 hover:scale-105 hover:shadow"
-          @click="isClickButtonTambah = true">
-          Tambah
-        </button>
-      </div>
-      
+    <form class="w-full mb-5" @submit.prevent="">
       <div class="rounded overflow-hidden h-0 transition-all duration-100 ease-in-out" :class="{'h-36 p-2 shadow border border-neutral-200': isClickButtonTambah}">
         <div class="flex justify-between items-start gap-5 mb-2">
           <div class="input-container flex flex-col w-full">
@@ -73,7 +78,7 @@
 
 
     <!-- table untuk menampilkan student -->
-    <table class="w-[95%] mx-auto bg-[rgb(253,253,253)] shadow border border-neutral-200 mb-5">
+    <table class="w-full bg-[rgb(253,253,253)] shadow border border-neutral-200 mb-5">
       <thead>
         <tr>
           <th>Nama</th>
@@ -95,7 +100,6 @@
               class="outline-none w-full"
               :readonly="!(rowEdit === index)" 
               :class="{'border border-neutral-500 bg-white shadow-md rounded py-1 px-1.5': rowEdit === index}">
-            <small class="text-red-500 hidden">error nanme</small>
           </td>
           <td>
             <input 
@@ -105,7 +109,6 @@
               class="outline-none w-full"
               :readonly="!(rowEdit === index)" 
               :class="{'border border-neutral-500 bg-white shadow-md rounded py-1 px-1.5': rowEdit === index}">
-            <small class="text-red-500 hidden">error nanme</small>
           </td>
           <td>
             <input 
@@ -115,7 +118,6 @@
               class="outline-none w-full"
               :readonly="!(rowEdit === index)" 
               :class="{'border border-neutral-500 bg-white shadow-md rounded py-1 px-1.5': rowEdit === index}">
-            <small class="text-red-500 hidden">error nanme</small>
           </td>
           <td>
             <select 
@@ -127,7 +129,6 @@
               <option value="Laki-Laki">Laki-Laki</option>
               <option value="Perempuan">Perempuan</option>
             </select>
-            <small class="text-red-500 hidden">error nanme</small>
           </td>
           <td>
             <select 
@@ -143,7 +144,6 @@
               <option value="Lima">Lima</option>
               <option value="Enam">Enam</option>
             </select>
-            <small class="text-red-500 hidden">error nanme</small>
           </td>
           <td>{{ student.created_at }}</td>
           <td>
@@ -213,8 +213,8 @@ export default {
         tanggal_lahir: '',
       },
       students: [],
-      rowEdit: null,
       studentBuffer: {},
+      rowEdit: null,
       buttonSaveDisabled: false,
     }
   },
@@ -224,6 +224,19 @@ export default {
   },
 
   methods: {
+    searchStudent(event) {
+      this.$store.dispatch('searchStudent', {
+        keyword: event.target.value
+      })
+      .then(response => {
+        console.log(response);
+        this.students = response.data.students;
+      })
+      .catch(error => {
+        console.error(error);
+      })
+    },
+
     inputValidation(type) {
       switch (type) {
         case 'nama' : 
@@ -353,7 +366,7 @@ export default {
         if(response.data.status === 200 && response.data.message === 'Student Update Successfully') {
           this.rowEdit = null;
           this.getStudents();
-          this.setAlertMessage(response.data.message);
+          this.setAlertMessage('success', response.data.message);
         }
       })
       .catch(error => {
@@ -369,7 +382,7 @@ export default {
       .then(response => {
         if(response.data.status === 200 && response.data.message === 'Student Delete Successfully') {
           this.students = this.students.filter(student => student.id !== id);
-          this.setAlertMessage(response.data.message);
+          this.setAlertMessage('success', response.data.message);
         }
       })
       .catch(error => {

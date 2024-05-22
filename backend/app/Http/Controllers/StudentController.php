@@ -103,4 +103,15 @@ class StudentController extends Controller
                response()->json(['status' => 200, 'message' => 'Student Delete Successfully']) : 
                response()->json(['status' => 500, 'message' => 'Something Went Error'], 500) ;
     }
+
+    public function search(Request $request)
+    {   
+        $keyword = $request->keyword;
+
+        $students = Student::where('nama', 'LIKE', "%$keyword%")
+                           ->orWhere('email', 'LIKE', "%$keyword%")
+                           ->get();
+
+        return response()->json(['status' => 200, 'students' => $students], 200);
+    }
 }

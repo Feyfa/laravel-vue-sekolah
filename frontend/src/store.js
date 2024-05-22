@@ -3,6 +3,18 @@ import axios from "@/axios";
 
 export default createStore({
   actions: {
+    searchStudent(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.get(`/search/students?keyword=${data.keyword}`)
+             .then(response => {
+              resolve(response);
+             })
+             .catch(error => {
+              reject(error);
+             });
+      });
+    },
+
     getStudents(context, data) {
       return new Promise((resolve, reject) => {
         axios.get('/students')
