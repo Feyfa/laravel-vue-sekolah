@@ -16,7 +16,7 @@
 
 
     <div class="w-full flex justify-between items-start mb-2">
-      <div :style="{'visibility: hidden': students.data.length < 1}">
+      <div :style="{visibility: students.data.length < 1 ? 'hidden' : 'visible' }">
         <div>
           <button 
             v-if="students.current_page > 1" 
@@ -218,6 +218,7 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -410,12 +411,12 @@ export default {
     // untuk update student
     updateStudent(index) {
       this.$store.dispatch('updateStudent', {
-        id: this.students[index].id,
-        nama: this.students[index].nama,
-        email: this.students[index].email,
-        tanggal_lahir: this.students[index].tanggal_lahir,
-        jenis_kelamin: this.students[index].jenis_kelamin,
-        kelas: this.students[index].kelas,
+        id: this.students.data[index].id,
+        nama: this.students.data[index].nama,
+        email: this.students.data[index].email,
+        tanggal_lahir: this.students.data[index].tanggal_lahir,
+        jenis_kelamin: this.students.data[index].jenis_kelamin,
+        kelas: this.students.data[index].kelas,
       })
       .then(response => {
         if(response.data.status === 200 && response.data.message === 'Student Update Successfully') {
@@ -431,18 +432,38 @@ export default {
 
     // untuk delete student
     deleteStudent(id) {
-      this.$store.dispatch('deleteStudent', {
-        id
-      })
-      .then(response => {
-        if(response.data.status === 200 && response.data.message === 'Student Delete Successfully') {
-          this.students = this.students.filter(student => student.id !== id);
-          this.setAlertMessage('success', response.data.message);
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.$store.dispatch('deleteStudent', {
+            id
+          })
+          .then(response => {
+            console.log(response);
+            if(response.data.status === 200 && response.data.message === 'Student Delete Successfully') {
+              this.students.data = this.students.data.filter(student => student.id !== id);
+              
+              Swal.fire({
+                title: "Deleted!",
+                text: response.data.message,
+                icon: "success",
+                confirmButtonColor: '#3085d6'
+              });
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
         }
-      })
-      .catch(error => {
-        console.error(error);
       });
+      
     }
     
   },
