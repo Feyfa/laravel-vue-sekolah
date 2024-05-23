@@ -4,5 +4,5 @@
 
 th,
 td {
-  @apply p-3 text-start border-b border-b-neutral-300
+  @apply p-3 text-start border-b border-b-neutral-400
 }

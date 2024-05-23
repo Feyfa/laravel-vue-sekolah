@@ -11,13 +11,18 @@ class StudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $students = Student::all();
+    public function index(Request $request)
+    {   
+        $keyword = $request->input('keyword', '');
 
-        return ($students->count() > 0) ?
-               response()->json(['status' => 200, 'students' => $students], 200) : 
-               response()->json(['status' => 404, 'message' => 'Student Not Found'], 404) ;
+        // $students = Student::all();
+        $students = Student::where('nama', 'like', "%$keyword%")
+                           ->orWhere('email', 'like', "%$keyword%")
+                           ->orWhere('jenis_kelamin', 'like', "%$keyword%")
+                           ->orWhere('tanggal_lahir', 'like', "%$keyword%")
+                           ->paginate(10);
+
+        return response()->json(['status' => 200, 'students' => $students], 200);
     }
 
     /**
@@ -102,16 +107,5 @@ class StudentController extends Controller
         return $result ?
                response()->json(['status' => 200, 'message' => 'Student Delete Successfully']) : 
                response()->json(['status' => 500, 'message' => 'Something Went Error'], 500) ;
-    }
-
-    public function search(Request $request)
-    {   
-        $keyword = $request->keyword;
-
-        $students = Student::where('nama', 'LIKE', "%$keyword%")
-                           ->orWhere('email', 'LIKE', "%$keyword%")
-                           ->get();
-
-        return response()->json(['status' => 200, 'students' => $students], 200);
     }
 }

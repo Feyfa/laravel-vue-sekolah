@@ -1,8 +1,8 @@
 <template>
-  <div class="mt-20 w-[95%] mx-auto">
+  <div class="mt-16 w-[95%] mx-auto">
 
     <!-- alert custom -->
-    <div v-if="alert.message" class="border border-neutral-500 rounded shadow-lg fixed top-20 right-8 flex justify-between items-center gap-8 z-50 min-w-72 p-2.5 alert" :class="{'bg-green-500': alert.status === 'success', 'bg-red-500': alert.status === 'error'}">
+    <div v-if="alert.message" class="border border-neutral-500 rounded shadow-lg fixed top-16 right-8 flex justify-between items-center gap-8 z-50 min-w-72 p-2.5 alert" :class="{'bg-green-500': alert.status === 'success', 'bg-red-500': alert.status === 'error'}">
       <div class="flex justify-center items-center gap-2">
         <i class="bi bi-bell"></i>
         <h2>{{ alert.message }}</h2>
@@ -15,11 +15,36 @@
 
 
 
-    <div class="w-full flex justify-between mb-2">
+    <div class="w-full flex justify-between items-start mb-2">
+      <div :style="{'visibility: hidden': students.data.length < 1}">
+        <div>
+          <button 
+            v-if="students.current_page > 1" 
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center"
+            @click="setCurrentPage('prev')">
+            <<
+          </button>
+          <button 
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center" 
+            v-for="(i, index) in students.last_page" :class="{'bg-neutral-300': i === students.current_page}"
+            @click="setCurrentPage('', i)">
+            {{ i }}
+          </button>
+          <button 
+            v-if="students.current_page !== students.last_page" 
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center"
+            @click="setCurrentPage('next')">
+            >>
+          </button>
+        </div>
+        <div>
+          <small>Showing {{ students.current_page }} To {{ students.last_page }} Of {{ students.total }} Entries</small>
+        </div>
+      </div>
       <input 
-        placeholder="seacrh" 
+        placeholder="seacrh"
         type="text" 
-        class="border border-neutral-500 rounded outline-none py-1 px-1.5"
+        class="border border-neutral-500 rounded outline-none py-1 px-1.5 shadow"
         @keyup.enter="searchStudent">
       <button 
         type="submit" 
@@ -30,57 +55,58 @@
     </div>
 
     <!-- form untuk menambahkan student -->
-    <form class="w-full mb-5" @submit.prevent="">
-      <div class="rounded overflow-hidden h-0 transition-all duration-100 ease-in-out" :class="{'h-36 p-2 shadow border border-neutral-200': isClickButtonTambah}">
-        <div class="flex justify-between items-start gap-5 mb-2">
-          <div class="input-container flex flex-col w-full">
-            <label for="nama" :class="{'text-red-500': studentAddError.nama.length !== 0}">Nama</label>
-            <input placeholder="nama" id="nama" type="text" class="border border-neutral-500 rounded outline-none py-1 px-1.5" v-model="studentAdd.nama" :class="{'border-red-500': studentAddError.nama.length !== 0}" @blur="inputValidation('nama')" @keyup="inputValidation('nama')">
-            <small class="text-red-500" :class="{'hidden': studentAddError.nama.length === 0}">{{ studentAddError.nama }}</small>
-          </div>
-          <div class="input-container flex flex-col w-full">
-            <label for="email" :class="{'text-red-500': studentAddError.email.length !== 0}">Email</label>
-            <input placeholder="email" id="email"type="email" class="border border-neutral-500 rounded outline-none py-1 px-1.5" v-model="studentAdd.email" :class="{'border-red-500': studentAddError.email.length !== 0}" @blur="inputValidation('email')" @keyup="inputValidation('email')">
-            <small class="text-red-500" :class="{'hidden': studentAddError.email.length === 0}">{{ studentAddError.email }}</small>
-          </div>
-          <div class="input-container flex flex-col w-full">
-            <label for="tanggal_lahir" :class="{'text-red-500': studentAddError.tanggal_lahir.length !== 0}">Tanggal Lahir</label>
-            <input id="tanggal_lahir" type="date" class="border border-neutral-500 rounded outline-none py-1 px-1.5" v-model="studentAdd.tanggal_lahir" :class="{'border-red-500': studentAddError.tanggal_lahir.length !== 0}" @blur="inputValidation('tanggal_lahir')" @change="inputValidation('tanggal_lahir')">
-            <small class="text-red-500" :class="{'hidden': studentAddError.tanggal_lahir.length === 0}">{{ studentAddError.tanggal_lahir }}</small>
-          </div>
-          <div class="input-container flex flex-col w-full">
-            <label for="jenis_kelamin">Jenis Kelamin</label>
-            <select name="" id="jenis_kelamin" class="border border-neutral-500 rounded outline-none py-[.48rem] px-1.5" v-model="studentAdd.jenis_kelamin">
-              <option value="Laki-Laki">Laki-Laki</option>
-              <option value="Perempuan">Perempuan</option>
-            </select>
-          </div>  
-          <div class="input-container flex flex-col w-full">
-            <label for="kelas">Kelas</label>
-            <select name="" id="kelas" class="border border-neutral-500 rounded outline-none py-[.48rem] px-1.5" v-model="studentAdd.kelas">
-              <option value="Satu">Satu</option>
-              <option value="Dua">Dua</option>
-              <option value="Tiga">Tiga</option>
-              <option value="Empat">Empat</option>
-              <option value="Lima">Lima</option>
-              <option value="Enam">Enam</option>
-            </select>
-          </div>
+    <form class="w-full mb-5 rounded overflow-hidden h-0 transition-all duration-300 ease-in-out" :class="{'h-36 p-2 shadow border border-neutral-200': isClickButtonTambah}" @submit.prevent="">
+      <div class="flex justify-between items-start gap-5 mb-2">
+        <div class="input-container flex flex-col w-full">
+          <label for="nama" :class="{'text-red-500': studentAddError.nama.length !== 0}">Nama</label>
+          <input placeholder="nama" id="nama" type="text" class="border border-neutral-500 rounded outline-none py-1 px-1.5 shadow" v-model="studentAdd.nama" :class="{'border-red-500': studentAddError.nama.length !== 0}" @blur="inputValidation('nama')" @keyup="inputValidation('nama')">
+          <small class="text-red-500" :class="{'hidden': studentAddError.nama.length === 0}">{{ studentAddError.nama }}</small>
         </div>
-        <div class="flex justify-end items-center gap-7">
-          <button type="button" class="w-24 py-1 bg-gray-200 border border-neutral-300 rounded shadow-sm transition-all duration-100 ease-in-out hover:bg-gray-300 hover:scale-105 hover:shadow" @click="cancelAddStudent">Cancel</button>
-          <button type="button" id="button-save"class="w-24 py-1 bg-gray-200 border border-neutral-300 rounded shadow-sm transition-all duration-100 ease-in-out hover:bg-gray-300 hover:scale-105 hover:shadow" :class="{'opacity-70 hover:scale-100 hover:shadow-none hover:bg-gray-200': buttonSaveDisabled}" @click="addStudent" :disabled="buttonSaveDisabled">Save</button>
+        <div class="input-container flex flex-col w-full">
+          <label for="email" :class="{'text-red-500': studentAddError.email.length !== 0}">Email</label>
+          <input placeholder="email" id="email"type="email" class="border border-neutral-500 rounded outline-none py-1 px-1.5 shadow" v-model="studentAdd.email" :class="{'border-red-500': studentAddError.email.length !== 0}" @blur="inputValidation('email')" @keyup="inputValidation('email')">
+          <small class="text-red-500" :class="{'hidden': studentAddError.email.length === 0}">{{ studentAddError.email }}</small>
         </div>
+        <div class="input-container flex flex-col w-full">
+          <label for="tanggal_lahir" :class="{'text-red-500': studentAddError.tanggal_lahir.length !== 0}">Tanggal Lahir</label>
+          <input id="tanggal_lahir" type="date" class="border border-neutral-500 rounded outline-none py-1 px-1.5 shadow" v-model="studentAdd.tanggal_lahir" :class="{'border-red-500': studentAddError.tanggal_lahir.length !== 0}" @blur="inputValidation('tanggal_lahir')" @change="inputValidation('tanggal_lahir')">
+          <small class="text-red-500" :class="{'hidden': studentAddError.tanggal_lahir.length === 0}">{{ studentAddError.tanggal_lahir }}</small>
+        </div>
+        <div class="input-container flex flex-col w-full">
+          <label for="jenis_kelamin">Jenis Kelamin</label>
+          <select name="" id="jenis_kelamin" class="border border-neutral-500 rounded outline-none py-[.48rem] px-1.5 shadow" v-model="studentAdd.jenis_kelamin">
+            <option value="Laki-Laki">Laki-Laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+        </div>  
+        <div class="input-container flex flex-col w-full">
+          <label for="kelas">Kelas</label>
+          <select name="" id="kelas" class="border border-neutral-500 rounded outline-none py-[.48rem] px-1.5 shadow" v-model="studentAdd.kelas">
+            <option value="Satu">Satu</option>
+            <option value="Dua">Dua</option>
+            <option value="Tiga">Tiga</option>
+            <option value="Empat">Empat</option>
+            <option value="Lima">Lima</option>
+            <option value="Enam">Enam</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end items-center gap-7">
+        <button type="button" class="w-24 py-1 bg-gray-200 border border-neutral-300 rounded shadow-sm transition-all duration-100 ease-in-out hover:bg-gray-300 hover:scale-105 hover:shadow" @click="cancelAddStudent">Cancel</button>
+        <button type="button" id="button-save" class="w-24 py-1 bg-gray-200 border border-neutral-300 rounded shadow-sm transition-all duration-100 ease-in-out hover:bg-gray-300 hover:scale-105 hover:shadow" :class="{'opacity-70 hover:scale-100 hover:shadow-none hover:bg-gray-200': buttonSaveDisabled}" @click="addStudent" :disabled="buttonSaveDisabled">Save</button>
       </div>
     </form>
     <!-- form untuk menambahkan student -->
 
+    <div>
+
+    </div>
 
 
     <!-- table untuk menampilkan student -->
-    <table class="w-full bg-[rgb(253,253,253)] shadow border border-neutral-200 mb-5">
+    <table class="w-full bg-[rgb(253,253,253)] shadow border border-neutral-400 mb-5">
       <thead>
-        <tr>
+        <tr class="bg-green-500">
           <th>Nama</th>
           <th>Email</th>
           <th>Tanggal Lahir</th>
@@ -91,12 +117,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(student, index) in students">
+        
+        <tr v-for="(student, index) in students.data">
           <td>
             <input 
               required 
               type="text" 
-              v-model="students[index].nama"
+              v-model="students.data[index].nama"
               class="outline-none w-full"
               :readonly="!(rowEdit === index)" 
               :class="{'border border-neutral-500 bg-white shadow-md rounded py-1 px-1.5': rowEdit === index}">
@@ -105,7 +132,7 @@
             <input 
               required 
               type="email" 
-              v-model="students[index].email"
+              v-model="students.data[index].email"
               class="outline-none w-full"
               :readonly="!(rowEdit === index)" 
               :class="{'border border-neutral-500 bg-white shadow-md rounded py-1 px-1.5': rowEdit === index}">
@@ -114,7 +141,7 @@
             <input 
               required 
               type="date" 
-              v-model="students[index].tanggal_lahir"
+              v-model="students.data[index].tanggal_lahir"
               class="outline-none w-full"
               :readonly="!(rowEdit === index)" 
               :class="{'border border-neutral-500 bg-white shadow-md rounded py-1 px-1.5': rowEdit === index}">
@@ -122,7 +149,7 @@
           <td>
             <select 
               required 
-              v-model="students[index].jenis_kelamin"
+              v-model="students.data[index].jenis_kelamin"
               class="outline-none w-full"
               :disabled="!(rowEdit === index)" 
               :class="{'border border-neutral-500 bg-white shadow-md rounded py-[.48rem] px-1.5': rowEdit === index}">
@@ -133,7 +160,7 @@
           <td>
             <select 
               required 
-              v-model="students[index].kelas"
+              v-model="students.data[index].kelas"
               class="outline-none w-full"
               :disabled="!(rowEdit === index)" 
               :class="{'border border-neutral-500 bg-white shadow-md rounded py-[.48rem] px-1.5': rowEdit === index}">
@@ -178,7 +205,7 @@
           </td>
         </tr>
 
-        <tr v-if="students.length < 1">
+        <tr v-if="students.data.length < 1">
           <td colspan="7">
             <h1 class="text-center">Student Kosong...</h1>
           </td>
@@ -212,7 +239,13 @@ export default {
         email: '',
         tanggal_lahir: '',
       },
-      students: [],
+      students: {
+        data: [],
+        current_page: 1,
+        last_page: '',
+        total: ''
+      },
+      keyword: '',
       studentBuffer: {},
       rowEdit: null,
       buttonSaveDisabled: false,
@@ -224,17 +257,35 @@ export default {
   },
 
   methods: {
+    setCurrentPage(action, page) {
+      if(action === 'prev') {
+        if(this.students.current_page > 1) {
+          this.students.current_page--;
+          this.getStudents();
+          this.rowEdit = null;
+          this.isClickButtonTambah = false;
+        }
+      }
+      else if(action === 'next') {
+        if(this.students.current_page < this.students.last_page) {
+          this.students.current_page++;
+          this.getStudents();
+          this.rowEdit = null;
+          this.isClickButtonTambah = false;
+        }
+      }
+      else {
+        this.students.current_page = page;
+        this.getStudents();
+        this.rowEdit = null;
+        this.isClickButtonTambah = false;
+      }
+    },
+
     searchStudent(event) {
-      this.$store.dispatch('searchStudent', {
-        keyword: event.target.value
-      })
-      .then(response => {
-        console.log(response);
-        this.students = response.data.students;
-      })
-      .catch(error => {
-        console.error(error);
-      })
+      this.keyword = event.target.value;
+      this.students.current_page = 1;
+      this.getStudents();
     },
 
     inputValidation(type) {
@@ -282,14 +333,18 @@ export default {
 
     // untuk mendapatkan semua data students
     getStudents() {
-      this.$store.dispatch('getStudents')
-                 .then(response => {
-                  this.students = response.data.students;
-                  // console.log(this.students);
-                 })
-                 .catch(error => {
-                  console.error(error);
-                 });
+      this.$store.dispatch('getStudents',{
+        current_page: this.students.current_page,
+        keyword: this.keyword
+      }).then(response => {
+        this.students.data = response.data.students.data;
+        this.students.current_page = response.data.students.current_page;
+        this.students.last_page = response.data.students.last_page;
+        this.students.total = response.data.students.total;
+        console.log(this.students);
+      }).catch(error => {
+        console.error(error);
+      });
     },
 
     // untuk clear input form saat manambahkan student
