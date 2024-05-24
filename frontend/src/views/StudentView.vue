@@ -24,11 +24,38 @@
             @click="setCurrentPage('prev')">
             <<
           </button>
-          <button 
+          <!-- <button 
             class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center" 
             v-for="(i, index) in students.last_page" :class="{'bg-neutral-300': i === students.current_page}"
             @click="setCurrentPage('', i)">
             {{ i }}
+          </button> -->
+          <button 
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center" 
+            :class="{
+              'bg-neutral-300': getPage(1) === students.current_page,
+              'hidden': getPage(1) > students.last_page
+            }"
+            @click="setCurrentPage('', getPage(1))">
+            {{ getPage(1) }}
+          </button>
+          <button 
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center" 
+            :class="{
+              'bg-neutral-300': getPage(2) === students.current_page,
+              'hidden': getPage(2) > students.last_page
+            }"
+            @click="setCurrentPage('', getPage(2))">
+            {{ getPage(2) }}
+          </button>
+          <button 
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center" 
+            :class="{
+              'bg-neutral-300': getPage(3) === students.current_page,
+              'hidden': getPage(3) > students.last_page
+            }"
+            @click="setCurrentPage('', getPage(3))">
+            {{ getPage(3) }}
           </button>
           <button 
             v-if="students.current_page !== students.last_page" 
@@ -242,9 +269,24 @@ export default {
       },
       students: {
         data: [],
+        // page saat ini
         current_page: 1,
-        last_page: '',
-        total: ''
+        // akhir dari page
+        last_page: 0,
+        // banyak page dalam 1 halaman, dalam hal ini ada 3
+        // jadi bentuknya pagenya akan seperti ini
+        // 1 2 3
+        // 4 5 6
+        // 7 8 9
+        // dan seterusnya
+        limit_page: 3,
+        // ini adalah posisi page per limit pagenya, maksudnya gini
+        // kan bentuk page itu akan seprti ini ya
+        // 1 2 3 -> position_page_per_limit_page = 1
+        // 4 5 6 -> position_page_per_limit_page = 2
+        // 7 8 9 -> position_page_per_limit_page = 3
+        position_page_per_limit_page: 1,
+        total: 0
       },
       keyword: '',
       studentBuffer: {},
@@ -258,10 +300,15 @@ export default {
   },
 
   methods: {
+    getPage(buttonPosition) { 
+      return (this.students.limit_page * (this.students.position_page_per_limit_page - 1)) + buttonPosition;
+    },
+
     setCurrentPage(action, page) {
       if(action === 'prev') {
         if(this.students.current_page > 1) {
           this.students.current_page--;
+          this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
           this.getStudents();
           this.rowEdit = null;
           this.isClickButtonTambah = false;
@@ -270,6 +317,12 @@ export default {
       else if(action === 'next') {
         if(this.students.current_page < this.students.last_page) {
           this.students.current_page++;
+          this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
+          console.log({
+            position_page_per_limit_page: this.students.position_page_per_limit_page,
+            limit_page: this.students.limit_page,
+            current_page: this.students.current_page,
+        });
           this.getStudents();
           this.rowEdit = null;
           this.isClickButtonTambah = false;
@@ -277,6 +330,7 @@ export default {
       }
       else {
         this.students.current_page = page;
+        this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
         this.getStudents();
         this.rowEdit = null;
         this.isClickButtonTambah = false;
@@ -339,7 +393,6 @@ export default {
         keyword: this.keyword
       }).then(response => {
         this.students.data = response.data.students.data;
-        this.students.current_page = response.data.students.current_page;
         this.students.last_page = response.data.students.last_page;
         this.students.total = response.data.students.total;
         console.log(this.students);
