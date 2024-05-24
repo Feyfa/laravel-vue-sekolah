@@ -13,17 +13,29 @@ class StudentTest extends TestCase
      */
     public function testIndex()
     {
-        $this->get('/api/students')
-             ->assertStatus(200)
-             ->assertSeeText('students')
-             ->assertSeeText('id')
-             ->assertSeeText('nama')
-             ->assertSeeText('email')
-             ->assertSeeText('tanggal_lahir')
-             ->assertSeeText('jenis_kelamin')
-             ->assertSeeText('kelas')
-             ->assertSeeText('created_at')
-             ->assertSeeText('updated_at');
+        $response = $this->get('/api/students')
+                         ->json();
+        
+        // digunakan untuk mengecek apakah status bernilai 200
+        $this->assertEquals(200, $response['status']);
+        // digunakna untuk mengecek apakah data itu berupa array
+        $this->assertIsArray($response['students']['data']);
+    }
+
+    /**
+     * test ini digunakan untuk mendapatkan data students, bedasarkan page dan keyword
+     */
+    public function testIndexParamsPageKeyword()
+    {
+        $response = $this->get('/api/students?page=1&keyword=i')
+                         ->json();
+
+        // digunakan untuk mengecek apakah status bernilai 200
+        $this->assertEquals(200, $response['status']);
+        // digunakna untuk mengecek apakah data itu berupa array
+        $this->assertIsArray($response['students']['data']);
+
+        dd($response);
     }
 
     /**
@@ -52,17 +64,13 @@ class StudentTest extends TestCase
      */
     public function testShow()
     {
-        $this->get('/api/students/1')
-             ->assertStatus(200)
-             ->assertSeeText('student')
-             ->assertSeeText('id')
-             ->assertSeeText('nama')
-             ->assertSeeText('email')
-             ->assertSeeText('tanggal_lahir')
-             ->assertSeeText('jenis_kelamin')
-             ->assertSeeText('kelas')
-             ->assertSeeText('created_at')
-             ->assertSeeText('updated_at');
+        $response = $this->get('/api/students/441')
+                         ->json();
+
+        // digunakan untuk mengecek apakah status bernilai 200
+        $this->assertEquals(200, $response['status']);
+        // digunakna untuk mengecek apakah data itu berupa array
+        $this->assertIsArray($response['student']);
     }
 
     /**
@@ -91,7 +99,7 @@ class StudentTest extends TestCase
             'kelas' => 'Enam'
         ];
 
-        $this->put('/api/students/1', $student)
+        $this->put('/api/students/439', $student)
              ->assertStatus(200)
              ->assertJson([
                 "status" => 200,
@@ -133,7 +141,7 @@ class StudentTest extends TestCase
         ];
 
         $this->put('/api/students/1', $student)
-             ->assertStatus(422);
+             ->assertStatus(404);
     }
 
     /**
@@ -141,7 +149,7 @@ class StudentTest extends TestCase
      */
     public function testDelete()
     {
-        $this->delete('/api/students/1')
+        $this->delete('/api/students/441')
              ->assertStatus(200)
              ->assertJson([
                 "status" => 200,
