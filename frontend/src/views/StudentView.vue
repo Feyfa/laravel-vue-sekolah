@@ -2,7 +2,7 @@
   <div class="mt-16 w-[95%] mx-auto">
 
     <!-- alert custom -->
-    <div v-if="alert.message" class="border border-neutral-500 rounded shadow-lg fixed top-16 right-8 flex justify-between items-center gap-8 z-50 min-w-72 p-2.5 alert" :class="{'bg-green-500': alert.status === 'success', 'bg-red-500': alert.status === 'error'}">
+    <div v-if="alert.message" class="mini-alert border border-neutral-500 rounded shadow-lg fixed top-16 right-8 flex justify-between items-center gap-8 z-50 min-w-72 p-2.5 alert" :class="{'bg-green-500': alert.status === 'success', 'bg-red-500': alert.status === 'error'}">
       <div class="flex justify-center items-center gap-2">
         <i class="bi bi-bell"></i>
         <h2>{{ alert.message }}</h2>
@@ -20,38 +20,32 @@
         <div>
           <button 
             v-if="students.current_page > 1" 
-            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center"
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-200 w-10 py-1 text-center"
             @click="setCurrentPage('prev')">
             <<
           </button>
-          <!-- <button 
-            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center" 
-            v-for="(i, index) in students.last_page" :class="{'bg-neutral-300': i === students.current_page}"
-            @click="setCurrentPage('', i)">
-            {{ i }}
-          </button> -->
           <button 
-            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center" 
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-200 w-10 py-1 text-center" 
             :class="{
-              'bg-neutral-300': getPage(1) === students.current_page,
+              'bg-neutral-200': getPage(1) === students.current_page,
               'hidden': getPage(1) > students.last_page
             }"
             @click="setCurrentPage('', getPage(1))">
             {{ getPage(1) }}
           </button>
           <button 
-            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center" 
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-200 w-10 py-1 text-center" 
             :class="{
-              'bg-neutral-300': getPage(2) === students.current_page,
+              'bg-neutral-200': getPage(2) === students.current_page,
               'hidden': getPage(2) > students.last_page
             }"
             @click="setCurrentPage('', getPage(2))">
             {{ getPage(2) }}
           </button>
           <button 
-            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center" 
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-200 w-10 py-1 text-center" 
             :class="{
-              'bg-neutral-300': getPage(3) === students.current_page,
+              'bg-neutral-200': getPage(3) === students.current_page,
               'hidden': getPage(3) > students.last_page
             }"
             @click="setCurrentPage('', getPage(3))">
@@ -59,7 +53,7 @@
           </button>
           <button 
             v-if="students.current_page !== students.last_page" 
-            class="border border-neutral-500 cursor-pointer hover:bg-neutral-300 w-10 py-1 text-center"
+            class="border border-neutral-500 cursor-pointer hover:bg-neutral-200 w-10 py-1 text-center"
             @click="setCurrentPage('next')">
             >>
           </button>
@@ -273,6 +267,8 @@ export default {
         current_page: 1,
         // akhir dari page
         last_page: 0,
+        // ini adalah banyaknya row yang diambil dalam 1 page
+        per_page: 0,
         // banyak page dalam 1 halaman, dalam hal ini ada 3
         // jadi bentuknya pagenya akan seperti ini
         // 1 2 3
@@ -292,6 +288,18 @@ export default {
       studentBuffer: {},
       rowEdit: null,
       buttonSaveDisabled: false,
+    }
+  },
+
+  watch: {
+    // jika value dari variabel 'alert.message' ada perubahan maka jalankan function ini
+    'alert.message': function(value) {
+      // jika value ada isinya, maka tunggu sampai 3 detik, lalu ubah menjadi string kosong
+      if (value) {
+        setTimeout(() => {
+          this.alert.message = '';
+        }, 3000);
+      }
     }
   },
 
@@ -340,6 +348,7 @@ export default {
     searchStudent(event) {
       this.keyword = event.target.value;
       this.students.current_page = 1;
+      this.students.position_page_per_limit_page = 1;
       this.getStudents();
     },
 
@@ -395,6 +404,7 @@ export default {
         this.students.data = response.data.students.data;
         this.students.last_page = response.data.students.last_page;
         this.students.total = response.data.students.total;
+        this.students.per_page = response.data.students.per_page;
         console.log(this.students);
       }).catch(error => {
         console.error(error);
@@ -435,6 +445,11 @@ export default {
             this.buttonSaveDisabled = false;
             $('#button-save').html('Save');
 
+            /* UNTUK PAGINATION, SETELAH MENAMBAHKAN MURID, AKAN DI ARAH KAN KE PAGE TERBARU */
+            this.students.current_page = Math.ceil((this.students.total + 1) / this.students.per_page);
+            this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
+            /* UNTUK PAGINATION, SETELAH MENAMBAHKAN MURID, AKAN DI ARAH KAN KE PAGE TERBARU */
+            
             this.isClickButtonTambah = false;
             this.clearInputForm();
             this.getStudents();
@@ -501,7 +516,14 @@ export default {
           .then(response => {
             console.log(response);
             if(response.data.status === 200 && response.data.message === 'Student Delete Successfully') {
-              this.students.data = this.students.data.filter(student => student.id !== id);
+              /* UNTUK PAGINATION SETELAH HAPUS DATA, DAN KITA BERADA DI PAGE AKHIR, MAKA KITA DIARAH KAN KE PAGE SEBELUMNYA*/
+              if(this.students.current_page === this.students.last_page) {
+                this.students.current_page = Math.ceil((this.students.total - 1) / this.students.per_page);
+                this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
+              }
+              /* UNTUK PAGINATION SETELAH HAPUS DATA, DAN KITA BERADA DI PAGE AKHIR, MAKA KITA DIARAH KAN KE PAGE SEBELUMNYA*/
+
+              this.getStudents();
               
               Swal.fire({
                 title: "Deleted!",
