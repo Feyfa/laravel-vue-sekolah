@@ -20,6 +20,7 @@ class StudentController extends Controller
                            ->orWhere('email', 'like', "%$keyword%")
                            ->orWhere('jenis_kelamin', 'like', "%$keyword%")
                            ->orWhere('tanggal_lahir', 'like', "%$keyword%")
+                           ->orWhere('kelas', 'like', "$keyword")
                            ->paginate(10);
 
         return response()->json(['status' => 200, 'students' => $students], 200);
