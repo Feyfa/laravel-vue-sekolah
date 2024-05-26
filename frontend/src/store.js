@@ -61,6 +61,49 @@ export default createStore({
                reject(error);
              });
       });
+    },
+
+    registerSubmit(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.post('/register', {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+      });
+    },
+
+    loginSubmit(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.post('/login', {
+          email: data.email,
+          password: data.password,
+        })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+      });
+    },
+
+    logout(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.post('/logout')
+             .then(response => {
+              resolve(response);
+             })
+             .catch(error => {
+              reject(error);
+             })
+      });
     }
   }
 });

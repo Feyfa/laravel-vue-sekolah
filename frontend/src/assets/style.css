@@ -4,5 +4,8 @@
 
 th,
 td {
-  @apply p-3 text-start border-b border-b-neutral-400
+  @apply p-3 text-start border-b border-b-neutral-400;
+}
+.input-container {
+  @apply w-full flex flex-col justify-center items-start;
 }

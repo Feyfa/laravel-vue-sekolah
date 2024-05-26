@@ -408,6 +408,17 @@ export default {
         console.log(this.students);
       }).catch(error => {
         console.error(error);
+        // error ketika belum terautentikasi
+        if(error.response.status === 401) {
+          Swal.fire({
+            title: error.response.data.message,
+            icon: "error",
+            confirmButtonColor: '#3085d6'
+          })
+          .then(result => {
+            this.$router.push('/login');
+          });
+        }
       });
     },
 
@@ -441,6 +452,7 @@ export default {
           kelas: this.studentAdd.kelas,
         })
         .then(response => {
+          // console.log(response);
           if(response.data.status === 200 && response.data.message === 'Student Add Successfully') {
             this.buttonSaveDisabled = false;
             $('#button-save').html('Save');
@@ -457,9 +469,24 @@ export default {
           }
         })
         .catch(error => {
-          this.buttonSaveDisabled = false;
-          $('#button-save').html('Save');
-          this.setAlertMessage('error', error.response.data.message.email[0]);
+          console.error(error);
+          // error karena belum terautentikasi
+          if(error.response.status === 401) {
+            Swal.fire({
+              title: error.response.data.message,
+              icon: "error",
+              confirmButtonColor: '#3085d6'
+            })
+            .then(result => {
+              this.$router.push('/login');
+            });
+          }
+          // error ketika udah di autentikasi
+          else {
+            this.buttonSaveDisabled = false;
+            $('#button-save').html('Save');
+            this.setAlertMessage('error', error.response.data.message.email[0]);
+          }
         });
       }
 
@@ -495,6 +522,17 @@ export default {
       })
       .catch(error => {
         console.error(error);
+        // error ketika belum terautentikasi
+        if(error.response.status === 401) {
+          Swal.fire({
+            title: error.response.data.message,
+            icon: "error",
+            confirmButtonColor: '#3085d6'
+          })
+          .then(result => {
+            this.$router.push('/login');
+          });
+        }
       });
     },  
 
@@ -535,6 +573,17 @@ export default {
           })
           .catch(error => {
             console.error(error);
+            // error ketika belum terautentikasi
+            if(error.response.status === 401) {
+              Swal.fire({
+                title: error.response.data.message,
+                icon: "error",
+                confirmButtonColor: '#3085d6'
+              })
+              .then(result => {
+                this.$router.push('/login');
+              });
+            }
           });
         }
       });
