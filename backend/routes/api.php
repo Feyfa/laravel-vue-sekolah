@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,5 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tokenvalidation', [AuthController::class, 'tokenValidation']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::resource('students', StudentController::class);
+    Route::get('/students/export/excel', [ExcelController::class, 'export']);
+    Route::post('/students/import/excel', [ExcelController::class, 'import']);
 });
 

@@ -3,6 +3,32 @@ import axios from "@/axios";
 
 export default createStore({
   actions: {
+    importExcel(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.post('/students/import/excel', data)
+             .then(response => {
+               resolve(response);
+             })
+             .catch(error => {
+              reject(error);
+             })
+      })
+    },
+
+    exportExcel(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.get('/students/export/excel', {
+          responseType: 'blob'
+        })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+      });
+    },
+
     getStudents(context, data) {
       return new Promise((resolve, reject) => {
         axios.get(`/students?page=${data.current_page}&keyword=${data.keyword}`)

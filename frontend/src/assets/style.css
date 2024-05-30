@@ -9,3 +9,7 @@ td {
 .input-container {
   @apply w-full flex flex-col justify-center items-start;
 }
+
+.disabled {
+  @apply opacity-70;
+}
