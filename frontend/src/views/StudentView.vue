@@ -401,8 +401,8 @@ export default {
                     console.log(response);
 
                     /* UNTUK PAGINATION, SETELAH MENAMBAHKAN MURID, AKAN DI ARAH KAN KE PAGE TERBARU */
-                    this.students.current_page = Math.ceil((this.students.total + 1) / this.students.per_page);
-                    this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
+                    // this.students.current_page = Math.ceil((this.students.total + 1) / this.students.per_page);
+                    // this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
                     /* UNTUK PAGINATION, SETELAH MENAMBAHKAN MURID, AKAN DI ARAH KAN KE PAGE TERBARU */
 
                     this.disabled.buttonImport = false;
@@ -636,8 +636,8 @@ export default {
             $('#button-save').html('Save');
 
             /* UNTUK PAGINATION, SETELAH MENAMBAHKAN MURID, AKAN DI ARAH KAN KE PAGE TERBARU */
-            this.students.current_page = Math.ceil((this.students.total + 1) / this.students.per_page);
-            this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
+            // this.students.current_page = Math.ceil((this.students.total + 1) / this.students.per_page);
+            // this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
             /* UNTUK PAGINATION, SETELAH MENAMBAHKAN MURID, AKAN DI ARAH KAN KE PAGE TERBARU */
             
             this.isClickButtonTambah = false;
