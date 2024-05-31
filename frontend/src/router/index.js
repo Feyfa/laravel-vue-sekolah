@@ -49,9 +49,8 @@ router.beforeEach((to, from, next) => {
            // jika token valid, maka paksa di ke wilayah yang udah di autentikasi
            .then(response => {
             // console.log(response)
-            if(response.status === 200 && response.data.message === 'token valid') {
+            if(response.status === 200 && response.data.message === 'token valid')
               next({name: 'home'})
-            }
            })
            // jika token tidak valid, maka yaudah biarkan saja ke halaman register atau login 
            .catch(error => {
