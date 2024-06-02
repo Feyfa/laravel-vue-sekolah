@@ -89,7 +89,7 @@ class StudentController extends Controller
         $result = $student->update($validator->validate());
 
         return $result ?
-               response()->json(['status' => 200, 'message' => 'Student Update Successfully']) : 
+               response()->json(['status' => 200, 'message' => 'Student Update Successfully'], 200) : 
                response()->json(['status' => 500, 'message' => 'Something Went Error'], 500) ;
     }
 
@@ -107,7 +107,7 @@ class StudentController extends Controller
         $result = $student->delete();
 
         return $result ?
-               response()->json(['status' => 200, 'message' => 'Student Delete Successfully']) : 
+               response()->json(['status' => 200, 'message' => 'Student Delete Successfully'], 200) : 
                response()->json(['status' => 500, 'message' => 'Something Went Error'], 500) ;
     }
 }

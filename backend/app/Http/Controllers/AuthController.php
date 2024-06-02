@@ -39,8 +39,10 @@ class AuthController extends Controller
             return response()->json(['status' => 401, 'message' => 'invalid login details'], 401);
         
         $token = $request->user()->createToken('authToken')->plainTextToken;
+        $user = User::where('email', $request->email)
+                    ->first();
 
-        return response()->json(['status' => 200, 'message' => 'login success', 'token' => $token], 200);
+        return response()->json(['status' => 200, 'message' => 'login success', 'token' => $token, 'user' => $user], 200);
     }
 
     public function logout(Request $request)

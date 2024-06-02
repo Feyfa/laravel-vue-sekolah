@@ -3,6 +3,26 @@ import axios from "@/axios";
 
 export default createStore({
   actions: {
+    updateUser(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.put(`/users/${data.id}`, {
+          name: data.name,
+          email: data.email,
+          mail_mailer: data.mail_mailer,
+          mail_host: data.mail_host,
+          mail_port: data.mail_port,
+          mail_password: data.mail_password,
+          mail_encryption: data.mail_encryption,
+        })
+        .then(response => {
+          resolve(response);
+        }) 
+        .catch(error => {
+          reject(error);
+        });
+      });
+    },
+
     importExcel(context, data) {
       return new Promise((resolve, reject) => {
         axios.post('/students/import/excel', data)

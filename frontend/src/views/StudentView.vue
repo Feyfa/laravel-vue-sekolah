@@ -127,30 +127,86 @@
     <form class="w-full rounded overflow-hidden h-0 transition-all duration-300 ease-in-out" :class="{'h-36 p-2 mb-5 shadow border border-neutral-200': isClickButtonTambah}" @submit.prevent="">
       <div class="flex justify-between items-start gap-5 mb-2">
         <div class="input-container flex flex-col w-full">
-          <label for="nama" :class="{'text-red-500': studentAddError.nama.length !== 0}">Nama</label>
-          <input placeholder="nama" id="nama" type="text" class="border w-full border-neutral-500 rounded outline-none py-1 px-1.5 shadow" v-model="studentAdd.nama" :class="{'border-red-500': studentAddError.nama.length !== 0}" @blur="inputValidation('nama')" @keyup="inputValidation('nama')">
-          <small class="text-red-500" :class="{'hidden': studentAddError.nama.length === 0}">{{ studentAddError.nama }}</small>
+          <label 
+            for="nama" 
+            :class="{'text-red-500': studentAddError.nama.length !== 0}">
+            Nama
+          </label>
+          <input 
+            placeholder="nama" 
+            id="nama" 
+            type="text" 
+            class="border w-full border-neutral-500 rounded outline-none py-1 px-1.5 shadow" 
+            v-model="studentAdd.nama" 
+            :class="{'border-red-500': 
+            studentAddError.nama.length !== 0}" 
+            @blur="inputValidation('nama')" 
+            @keyup="inputValidation('nama')">
+          <small 
+            class="text-red-500" 
+            :class="{'hidden': studentAddError.nama.length === 0}">
+            {{ studentAddError.nama }}
+          </small>
         </div>
         <div class="input-container flex flex-col w-full">
-          <label for="email" :class="{'text-red-500': studentAddError.email.length !== 0}">Email</label>
-          <input placeholder="email" id="email"type="email" class="border w-full border-neutral-500 rounded outline-none py-1 px-1.5 shadow" v-model="studentAdd.email" :class="{'border-red-500': studentAddError.email.length !== 0}" @blur="inputValidation('email')" @keyup="inputValidation('email')">
-          <small class="text-red-500" :class="{'hidden': studentAddError.email.length === 0}">{{ studentAddError.email }}</small>
+          <label 
+            for="email" 
+            :class="{'text-red-500': studentAddError.email.length !== 0}">
+            Email
+          </label>
+          <input 
+            placeholder="email" 
+            id="email" 
+            type="email" 
+            class="border w-full border-neutral-500 rounded outline-none py-1 px-1.5 shadow" 
+            v-model="studentAdd.email" 
+            :class="{'border-red-500': studentAddError.email.length !== 0}" 
+            @blur="inputValidation('email')" 
+            @keyup="inputValidation('email')">
+          <small 
+            class="text-red-500" 
+            :class="{'hidden': studentAddError.email.length === 0}">
+            {{ studentAddError.email }}
+          </small>
         </div>
         <div class="input-container flex flex-col w-full">
-          <label for="tanggal_lahir" :class="{'text-red-500': studentAddError.tanggal_lahir.length !== 0}">Tanggal Lahir</label>
-          <input id="tanggal_lahir" type="date" class="border w-full border-neutral-500 rounded outline-none py-1 px-1.5 shadow" v-model="studentAdd.tanggal_lahir" :class="{'border-red-500': studentAddError.tanggal_lahir.length !== 0}" @blur="inputValidation('tanggal_lahir')" @change="inputValidation('tanggal_lahir')">
-          <small class="text-red-500" :class="{'hidden': studentAddError.tanggal_lahir.length === 0}">{{ studentAddError.tanggal_lahir }}</small>
+          <label 
+            for="tanggal_lahir" 
+            :class="{'text-red-500': studentAddError.tanggal_lahir.length !== 0}">
+            Tanggal Lahir
+          </label>
+          <input 
+            id="tanggal_lahir" 
+            type="date" 
+            class="border w-full border-neutral-500 rounded outline-none py-1 px-1.5 shadow" 
+            v-model="studentAdd.tanggal_lahir" 
+            :class="{'border-red-500': studentAddError.tanggal_lahir.length !== 0}" 
+            @blur="inputValidation('tanggal_lahir')" 
+            @change="inputValidation('tanggal_lahir')">
+          <small 
+            class="text-red-500" 
+            :class="{'hidden': studentAddError.tanggal_lahir.length === 0}">
+            {{ studentAddError.tanggal_lahir }}
+          </small>
         </div>
         <div class="input-container flex flex-col w-full">
           <label for="jenis_kelamin">Jenis Kelamin</label>
-          <select name="" id="jenis_kelamin" class="border w-full border-neutral-500 rounded outline-none py-[.48rem] px-1.5 shadow" v-model="studentAdd.jenis_kelamin">
+          <select 
+            name="" 
+            id="jenis_kelamin" 
+            class="border w-full border-neutral-500 rounded outline-none py-[.48rem] px-1.5 shadow" 
+            v-model="studentAdd.jenis_kelamin">
             <option value="Laki-Laki">Laki-Laki</option>
             <option value="Perempuan">Perempuan</option>
           </select>
         </div>  
         <div class="input-container flex flex-col w-full">
           <label for="kelas">Kelas</label>
-          <select name="" id="kelas" class="border w-full border-neutral-500 rounded outline-none py-[.48rem] px-1.5 shadow" v-model="studentAdd.kelas">
+          <select
+            name="" 
+            id="kelas" 
+            class="border w-full border-neutral-500 rounded outline-none py-[.48rem] px-1.5 shadow" 
+            v-model="studentAdd.kelas">
             <option value="Satu">Satu</option>
             <option value="Dua">Dua</option>
             <option value="Tiga">Tiga</option>
@@ -267,6 +323,12 @@
                 <i class="bi bi-x-circle"></i>
               </button>
             </div>
+            <div class="flex items-center justify-center" :class="{'hidden': rowEdit === index}">
+              <button 
+                @click="sendEmail(123)">
+                <i class="bi bi-envelope"></i>
+              </button>
+            </div>
           </td>
         </tr>
 
@@ -358,6 +420,10 @@ export default {
   },
 
   methods: {
+    sendEmail(id) {
+      alert(id);
+    },
+
     showImportExcel() {
       this.isClickButtonImport = !this.isClickButtonImport;
       this.isClickButtonTambah = false;
