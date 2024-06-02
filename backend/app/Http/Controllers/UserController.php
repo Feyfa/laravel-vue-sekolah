@@ -69,8 +69,8 @@ class UserController extends Controller
             'mail_from_name' => explode('@', $request->email)[0],
         ]);
 
-        $user = User::where('id', $id)
-                       ->first();
+        // $user = User::where('id', $id)
+        //                ->first();
 
         return $result ?
                response()->json(['status' => 200, 'message' => 'User Update Successfully', 'user' => $user], 200) : 
