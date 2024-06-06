@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
@@ -32,5 +33,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('users', UserController::class);
     Route::get('/students/export/excel', [ExcelController::class, 'export']);
     Route::post('/students/import/excel', [ExcelController::class, 'import']);
+    Route::post('/sendemail', [EmailController::class, 'sendEmail']);
 });
-

@@ -22,7 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'mail_mailer',
-        'main_host',
+        'mail_host',
         'mail_port',
         'mail_username',
         'mail_password',

@@ -3,6 +3,23 @@ import axios from "@/axios";
 
 export default createStore({
   actions: {
+    processSendEmail(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.post('/sendemail', {
+          idUser: data.idUser,
+          to: data.to,
+          subject: data.subject,
+          content: data.content,
+        })
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+      });
+    },
+
     updateUser(context, data) {
       return new Promise((resolve, reject) => {
         axios.put(`/users/${data.id}`, {
