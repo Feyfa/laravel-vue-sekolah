@@ -447,16 +447,6 @@ export default {
   },
 
   watch: {
-    // jika value dari variabel 'alert.message' ada perubahan maka jalankan function ini
-    'alert.message': function(value) {
-      // jika value ada isinya, maka tunggu sampai 3 detik, lalu ubah menjadi string kosong
-      if (value) {
-        setTimeout(() => {
-          this.alert.message = '';
-        }, 3000);
-      }
-    },
-    
     isSendEmail(newValue) {
       if (newValue) {
         this.$refs.modalEmail.classList.remove('bg-[rgba(0,0,0,.3)]');
@@ -735,6 +725,13 @@ export default {
     setAlertMessage(status, message) {
       this.alert.status = status;
       this.alert.message = message;
+
+      setTimeout(() => {
+        this.alert = {
+          status: '',
+          message: '',
+        }
+      }, 3000);
     },
 
     closeAlert() {
