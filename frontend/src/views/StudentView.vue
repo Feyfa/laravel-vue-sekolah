@@ -446,22 +446,6 @@ export default {
     }
   },
 
-  watch: {
-    isSendEmail(newValue) {
-      if (newValue) {
-        this.$refs.modalEmail.classList.remove('bg-[rgba(0,0,0,.3)]');
-        this.$refs.modalEmail.classList.remove('bg-[rgba(0,0,0,.6)]');
-        this.$refs.modalEmail.classList.remove('backdrop-blur-sm');
-        this.$refs.modalEmail.classList.add('bg-[rgba(0,0,0,.6)]');
-        this.$refs.modalEmail.classList.add('backdrop-blur-sm');
-      } else {
-        this.$refs.modalEmail.classList.remove('bg-[rgba(0,0,0,.6)]');
-        this.$refs.modalEmail.classList.remove('backdrop-blur-sm');
-        this.$refs.modalEmail.classList.add('bg-[rgba(0,0,0,.3)]');
-      }
-    }
-  },
-
   mounted() {
     this.getStudents();
   },
@@ -470,6 +454,13 @@ export default {
     processSendEmail() {
       this.isSendEmail = true;
       this.disabled.buttonSendEmail = true;
+
+      this.$refs.modalEmail.classList.remove('bg-[rgba(0,0,0,.3)]');
+      this.$refs.modalEmail.classList.remove('bg-[rgba(0,0,0,.6)]');
+      this.$refs.modalEmail.classList.remove('backdrop-blur-sm');
+      this.$refs.modalEmail.classList.add('bg-[rgba(0,0,0,.6)]');
+      this.$refs.modalEmail.classList.add('backdrop-blur-sm');
+
       $('#buttonSendEmail').html('Process...');
 
       this.$store.dispatch('processSendEmail', {
@@ -483,7 +474,13 @@ export default {
         
         this.isSendEmail = false;
         this.disabled.buttonSendEmail = false;
+
         this.$refs.buttonSendEmail = "Send Email";
+        
+        this.$refs.modalEmail.classList.remove('bg-[rgba(0,0,0,.6)]');
+        this.$refs.modalEmail.classList.remove('backdrop-blur-sm');
+        this.$refs.modalEmail.classList.add('bg-[rgba(0,0,0,.3)]');
+
         $('#buttonSendEmail').html('Send Email');
 
         if(response.status === 200) {
