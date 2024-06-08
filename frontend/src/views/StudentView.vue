@@ -3,7 +3,7 @@
     <ModalEmailComponent 
       :show="modalEmailComponent.show" 
       :to="modalEmailComponent.to" 
-      @hide="hiddenFormSendEmail" />
+      @hide="hiddenModalEmailComponent" />
 
     <div class="w-full flex justify-between items-start mb-2">
       <!-- pagination -->
@@ -315,7 +315,7 @@
             </div>
             <div class="flex items-center justify-center" :class="{'hidden': rowEdit === index}">
               <button 
-                @click="showFormSendEmail(student.email)">
+                @click="showModalEmailComponent(student.email)">
                 <i class="bi bi-envelope"></i>
               </button>
             </div>
@@ -403,12 +403,12 @@ export default {
   },
 
   methods: {
-    hiddenFormSendEmail() {
+    hiddenModalEmailComponent() {
       this.modalEmailComponent.show = false;
       this.modalEmailComponent.to = '';
     },
 
-    showFormSendEmail(email) {
+    showModalEmailComponent(email) {
       this.modalEmailComponent.show = true;
       this.modalEmailComponent.to = email;
     },
