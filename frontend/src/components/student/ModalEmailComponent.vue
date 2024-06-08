@@ -109,7 +109,7 @@ export default {
             status: 'success',
             message: response.data.message
           });
-          this.hiddenFormSendEmail();
+          this.hiddenModalEmailComponent();
         }
       })
       .catch(error => {
