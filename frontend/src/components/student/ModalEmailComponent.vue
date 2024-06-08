@@ -117,7 +117,7 @@ export default {
       });
     },
 
-    hiddenFormSendEmail() {
+    hiddenModalEmailComponent() {
       if(!this.isSendEmail) {
         this.$emit('hide');
         this.sendEmail = {
