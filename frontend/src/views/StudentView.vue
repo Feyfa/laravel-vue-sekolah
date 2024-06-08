@@ -884,12 +884,12 @@ export default {
           .then(response => {
             console.log(response);
             if(response.data.status === 200 && response.data.message === 'Student Delete Successfully') {
-              /* UNTUK PAGINATION SETELAH HAPUS DATA, DAN KITA BERADA DI PAGE AKHIR, MAKA KITA DIARAH KAN KE PAGE SEBELUMNYA*/
-              if(this.students.current_page === this.students.last_page) {
+              /* UNTUK PAGINATION SETELAH HAPUS DATA, DAN KITA BERADA DI PAGE AKHIR, MAKA KITA DIARAH KAN KE PAGE SEBELUMNYA, DAN LAKUKAN INI JIKA CURRENT PAGE ITU TIDAK SAMA DENGAN 1*/
+              if(this.students.current_page === this.students.last_page && this.students.current_page !== 1) {
                 this.students.current_page = Math.ceil((this.students.total - 1) / this.students.per_page);
                 this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
               }
-              /* UNTUK PAGINATION SETELAH HAPUS DATA, DAN KITA BERADA DI PAGE AKHIR, MAKA KITA DIARAH KAN KE PAGE SEBELUMNYA*/
+              /* UNTUK PAGINATION SETELAH HAPUS DATA, DAN KITA BERADA DI PAGE AKHIR, MAKA KITA DIARAH KAN KE PAGE SEBELUMNYA, DAN LAKUKAN INI JIKA CURRENT PAGE ITU TIDAK SAMA DENGAN 1*/
 
               this.getStudents();
 

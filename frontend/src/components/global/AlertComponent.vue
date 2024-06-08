@@ -1,7 +1,7 @@
 <template>
   <teleport to="body">
     <!-- alert custom -->
-    <div v-if="alert.message" class="mini-alert border border-neutral-500 rounded shadow-lg fixed top-16 right-8 flex justify-between items-center gap-8 z-50 min-w-80 p-2.5 alert" :class="{'bg-green-500': alert.status === 'success', 'bg-red-500': alert.status === 'error'}">
+    <div v-if="alert.message && alert.status" class="mini-alert border border-neutral-500 rounded shadow-lg fixed top-16 right-8 flex justify-between items-center gap-8 z-50 min-w-80 p-2.5 alert" :class="{'bg-green-500': alert.status === 'success', 'bg-red-500': alert.status === 'error'}">
       <div class="flex justify-center items-center gap-2">
         <i class="bi bi-bell"></i>
         <h2>{{ alert.message }}</h2>

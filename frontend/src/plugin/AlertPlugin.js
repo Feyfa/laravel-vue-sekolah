@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import AlertComponent from '@/components/Alert.vue'
+import AlertComponent from '@/components/global/AlertComponent.vue'
 
 const AlertPlugin = {
   install(app) {
@@ -10,7 +10,6 @@ const AlertPlugin = {
 
     // Tambahkan metode $alert ke aplikasi Vue
     app.config.globalProperties.$alert = (options) => {
-      console.log('Alert options:', options);
       instance.setAlertMessage(options.status, options.message);
     };
   }

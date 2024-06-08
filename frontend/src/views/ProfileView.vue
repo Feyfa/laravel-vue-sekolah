@@ -1,18 +1,6 @@
 <template>
   <div class="mt-16 w-[95%] mx-auto">
 
-    <!-- alert custom -->
-    <div v-if="alert.message" class="mini-alert border border-neutral-500 rounded shadow-lg fixed top-16 right-8 flex justify-between items-center gap-8 z-50 min-w-80 p-2.5 alert" :class="{'bg-green-500': alert.status === 'success', 'bg-red-500': alert.status === 'error'}">
-      <div class="flex justify-center items-center gap-2">
-        <i class="bi bi-bell"></i>
-        <h2>{{ alert.message }}</h2>
-      </div>
-      <button type="button" @click="closeAlert">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-    <!-- alert custom -->
-
     <div>
       <h1 class="text-center font-medium text-3xl">{{ user.name }}</h1>
     </div>
@@ -178,10 +166,6 @@ export default {
         name: '',
         email: '',
       },
-      alert: {
-        message: '',
-        status: '',
-      },
       isEdit: false
     }
   },
@@ -191,26 +175,7 @@ export default {
     console.log(this.user);
   },
 
-  watch: {
-    // jika value dari variabel 'alert.message' ada perubahan maka jalankan function ini
-    'alert.message': function(value) {
-      // jika value ada isinya, maka tunggu sampai 3 detik, lalu ubah menjadi string kosong
-      if (value) {
-        setTimeout(() => {
-          this.alert.message = '';
-        }, 3000);
-      }
-    }
-  },
-
   methods: {
-    closeAlert() {
-      this.alert =  {
-        status: '',
-        message: ''
-      };
-    },
-    
     inputValidation(type) {
       switch (type) {
         case 'name' : 
@@ -244,10 +209,10 @@ export default {
           console.log(response);
           if(response.status === 200) {
             this.isEdit = false;
-            this.alert = {
-              message: response.data.message,
-              status: 'success'
-            };
+            this.$alert({
+              status: 'success',
+              message: response.data.message
+            })
             localStorage.setItem('user', JSON.stringify(response.data.user));
           }
         })
