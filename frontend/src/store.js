@@ -2,7 +2,19 @@ import { createStore } from "vuex";
 import axios from "@/axios";
 
 export default createStore({
+  state: {
+    user: ''
+  },
+
+  getters: {
+    user: state => state.user
+  },
+
   actions: {
+    fetchUserFromLocalStorage() {
+      this.state.user = JSON.parse(localStorage.getItem('user'));
+    },
+
     processSendEmail(context, data) {
       return new Promise((resolve, reject) => {
         axios.post('/sendemail', {

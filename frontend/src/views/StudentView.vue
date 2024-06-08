@@ -1,40 +1,9 @@
 <template>
   <div class="mt-16 w-[95%] mx-auto">
-
-    <!-- modal -->
-    <div ref="modalEmail" @click="hiddenFormSendEmail" class="hidden fixed top-0 left-0 bottom-0 right-0 bg-[rgba(0,0,0,.3)] z-40 justify-center items-center">
-      <form @submit.prevent="" @click.stop class="w-2/5 bg-white border border-neutral-500 rounded-md shadow-[rgb(80,80,80)] shadow-xl p-4">
-        <h1 class="text-3xl font-medium text-center">Send Email</h1>
-
-        <div class="input-container mt-3">
-          <label for="to">To</label>
-          <input readonly type="email" id="to" class="border w-full border-neutral-500 rounded outline-none py-1 px-1.5 shadow" v-model="sendEmail.to">
-        </div>
-
-        <div class="input-container mt-3">
-          <label for="subject">Subject</label>
-          <input type="text" id="subject" class="border w-full border-neutral-500 rounded outline-none py-1 px-1.5 shadow" v-model="sendEmail.subject">
-        </div>
-
-        <div class="input-container mt-3">
-          <label for="content">Content</label>
-          <textarea id="content" class="border w-full border-neutral-500 rounded outline-none py-1 px-1.5 shadow" rows="9" v-model="sendEmail.content"></textarea>
-        </div>
-
-        <button 
-          id="buttonSendEmail"
-          :class="{'disabled': disabled.buttonSendEmail}"
-          :disabled="disabled.buttonSendEmail" 
-          ref="buttonSendEmail" 
-          class="w-full py-1 mt-4 bg-gray-200 border border-neutral-300 rounded shadow-sm hover:bg-gray-300" 
-          @click="processSendEmail">
-          Send Email
-        </button>
-      </form>
-    </div>
-    <!-- modal -->
-
-
+    <ModalEmailComponent 
+      :show="modalEmailComponent.show" 
+      :to="modalEmailComponent.to" 
+      @hide="hiddenFormSendEmail" />
 
     <div class="w-full flex justify-between items-start mb-2">
       <!-- pagination -->
@@ -367,8 +336,13 @@
 
 <script>
 import Swal from 'sweetalert2';
+import ModalEmailComponent from '@/components/student/ModalEmailComponent.vue';
 
 export default {
+  components: {
+    ModalEmailComponent,
+  },
+
   data() {
     return {
       isClickButtonTambah: false,
@@ -415,15 +389,11 @@ export default {
         buttonSave: false,
         buttonExport: false,
         buttonImport: false,
-        buttonSendEmail: false,
         inputFile: false,
       }, 
-      isSendEmail: false,                   
-      sendEmail: {
-        idUser: '',
+      modalEmailComponent: {
+        show: false,
         to: '',
-        subject: '',
-        content: ''
       }
     }
   },
@@ -433,72 +403,14 @@ export default {
   },
 
   methods: {
-    processSendEmail() {
-      this.isSendEmail = true;
-      this.disabled.buttonSendEmail = true;
-
-      this.$refs.modalEmail.classList.remove('bg-[rgba(0,0,0,.3)]');
-      this.$refs.modalEmail.classList.remove('bg-[rgba(0,0,0,.6)]');
-      this.$refs.modalEmail.classList.remove('backdrop-blur-sm');
-      this.$refs.modalEmail.classList.add('bg-[rgba(0,0,0,.6)]');
-      this.$refs.modalEmail.classList.add('backdrop-blur-sm');
-
-      $('#buttonSendEmail').html('Process...');
-
-      this.$store.dispatch('processSendEmail', {
-        idUser: this.sendEmail.idUser,
-        to: this.sendEmail.to,
-        subject: this.sendEmail.subject,
-        content: this.sendEmail.content,
-      })
-      .then(response => {
-        console.log(response);
-        
-        this.isSendEmail = false;
-        this.disabled.buttonSendEmail = false;
-
-        this.$refs.buttonSendEmail = "Send Email";
-        
-        this.$refs.modalEmail.classList.remove('bg-[rgba(0,0,0,.6)]');
-        this.$refs.modalEmail.classList.remove('backdrop-blur-sm');
-        this.$refs.modalEmail.classList.add('bg-[rgba(0,0,0,.3)]');
-
-        $('#buttonSendEmail').html('Send Email');
-
-        if(response.status === 200) {
-          this.isSendEmail = false;
-          this.$alert({
-            status: 'success',
-            message: response.data.message
-          });
-          this.hiddenFormSendEmail();
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    },
-
     hiddenFormSendEmail() {
-      if(!this.isSendEmail) {
-        this.$refs.modalEmail.classList.remove('flex');
-        this.$refs.modalEmail.classList.add('hidden');
-        
-        this.sendEmail = {
-          idUser: '',
-          to: '',
-          subject: '',
-          content: ''
-        }
-      }
+      this.modalEmailComponent.show = false;
+      this.modalEmailComponent.to = '';
     },
 
     showFormSendEmail(email) {
-      this.$refs.modalEmail.classList.remove('hidden');
-      this.$refs.modalEmail.classList.add('flex');
-      
-      this.sendEmail.idUser = JSON.parse(localStorage.getItem('user')).id;
-      this.sendEmail.to = email;    
+      this.modalEmailComponent.show = true;
+      this.modalEmailComponent.to = email;
     },
 
     showImportExcel() {

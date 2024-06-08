@@ -1,16 +1,6 @@
 <template>
   <div class="w-[95%] mx-auto border-black h-screen flex justify-center items-center">
 
-    <div v-if="alert.message" class="mini-alert border border-neutral-500 rounded shadow-lg fixed top-16 right-8 flex justify-between items-center gap-8 z-50 min-w-72 p-2.5 alert" :class="{'bg-green-500': alert.status === 'success', 'bg-red-500': alert.status === 'error'}">
-      <div class="flex justify-center items-center gap-2">
-        <i class="bi bi-bell"></i>
-        <h2>{{ alert.message }}</h2>
-      </div>
-      <button type="button" @click="closeAlert">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-
     <form class="border border-neutral-500 w-2/5 p-2 rounded shadow-md flex flex-col justify-center gap-3 items-center bg-zinc-50">
       <h1 class="text-2xl">Login</h1>
       
@@ -86,10 +76,6 @@ export default {
         email: '',
         password: ''
       },
-      alert: {
-        message: '',
-        status: ''
-      },
       buttonloginDisabled: false
     }
   },
@@ -107,13 +93,6 @@ export default {
           this.loginError.password = this.login.password.trim() === '' ? 'password is required' : '';
           break;
       }
-    },
-
-    closeAlert() {
-      this.alert =  {
-        status: '',
-        message: ''
-      };
     },
 
     loginSubmit() {
@@ -150,25 +129,15 @@ export default {
             this.buttonloginDisabled = false;
             $('#button-login').html('Login');
 
-            this.alert.message = error.response.data.message;
-            this.alert.status = 'error';
+            this.$alert({
+              status: 'error',
+              message: error.response.data.message
+            });
           }
         });
       }
     }
   },
-  
-  watch: {
-    // jika value dari variabel 'alert.message' ada perubahan maka jalankan function ini
-    'alert.message': function(value) {
-      // jika value ada isinya, maka tunggu sampai 3 detik, lalu ubah menjadi string kosong
-      if (value) {
-        setTimeout(() => {
-          this.alert.message = '';
-        }, 3000);
-      }
-    }
-  }
 }
 
 </script>

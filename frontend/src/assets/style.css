@@ -13,3 +13,7 @@ td {
 .disabled {
   @apply opacity-70;
 }
+
+.model-email-process {
+  @apply bg-[rgba(0,0,0,.6)] backdrop-blur-sm
+}
