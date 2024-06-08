@@ -1,20 +1,6 @@
 <template>
   <div class="mt-16 w-[95%] mx-auto">
 
-    <!-- alert custom -->
-    <div v-if="alert.message" class="mini-alert border border-neutral-500 rounded shadow-lg fixed top-16 right-8 flex justify-between items-center gap-8 z-50 min-w-80 p-2.5 alert" :class="{'bg-green-500': alert.status === 'success', 'bg-red-500': alert.status === 'error'}">
-      <div class="flex justify-center items-center gap-2">
-        <i class="bi bi-bell"></i>
-        <h2>{{ alert.message }}</h2>
-      </div>
-      <button type="button" @click="closeAlert">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-    <!-- alert custom -->
-
-
-
     <!-- modal -->
     <div ref="modalEmail" @click="hiddenFormSendEmail" class="hidden fixed top-0 left-0 bottom-0 right-0 bg-[rgba(0,0,0,.3)] z-40 justify-center items-center">
       <form @submit.prevent="" @click.stop class="w-2/5 bg-white border border-neutral-500 rounded-md shadow-[rgb(80,80,80)] shadow-xl p-4">
@@ -387,10 +373,6 @@ export default {
     return {
       isClickButtonTambah: false,
       isClickButtonImport: false,
-      alert: {
-        status: '',
-        message: ''
-      },
       studentAdd: {
         nama: '',
         email: '',
@@ -485,7 +467,10 @@ export default {
 
         if(response.status === 200) {
           this.isSendEmail = false;
-          this.setAlertMessage('success', response.data.message);
+          this.$alert({
+            status: 'success',
+            message: response.data.message
+          });
           this.hiddenFormSendEmail();
         }
       })
@@ -572,7 +557,10 @@ export default {
                     $('#dropzone-file').val('');
 
                     this.getStudents();
-                    this.setAlertMessage('success', response.data.message);
+                    this.$alert({
+                      status: 'success',
+                      message: response.data.message
+                    });
                    })
                    .catch(error => {
                     console.error(error);
@@ -584,11 +572,17 @@ export default {
                     $('#message-file').html('Upload File xlsx');
                     $('#dropzone-file').val('');
 
-                    this.setAlertMessage('error', error.response.data.message)
+                    this.$alert({
+                      status: 'error',
+                      message: response.data.message
+                    });
                    });
       } 
       else {
-        this.setAlertMessage('error', 'file not xlsx');
+        this.$alert({
+          status: 'error',
+          message: 'file not xlsx'
+        });
       }
 
     },
@@ -631,7 +625,10 @@ export default {
                       this.disabled.buttonExport = false;
                       $('#button-export').html('Export');
 
-                      this.setAlertMessage('success', 'Export Students Successfully');
+                      this.$alert({
+                        status: 'success',
+                        message: 'Export Students Successfully'
+                      });
                      })
                      .catch(error => {
                       console.error(error);
@@ -719,25 +716,6 @@ export default {
       this.isClickButtonTambah = false;
     },
 
-    setAlertMessage(status, message) {
-      this.alert.status = status;
-      this.alert.message = message;
-
-      setTimeout(() => {
-        this.alert = {
-          status: '',
-          message: '',
-        }
-      }, 3000);
-    },
-
-    closeAlert() {
-      this.alert =  {
-        status: '',
-        message: ''
-      };
-    },
-
     // untuk mendapatkan semua data students
     getStudents() {
       this.$store.dispatch('getStudents',{
@@ -808,7 +786,10 @@ export default {
             this.isClickButtonTambah = false;
             this.clearInputForm();
             this.getStudents();
-            this.setAlertMessage('success', response.data.message);
+            this.$alert({
+              status: 'success',
+              message: response.data.message
+            });
           }
         })
         .catch(error => {
@@ -828,7 +809,10 @@ export default {
           else {
             this.disabled.buttonSave = false;
             $('#button-save').html('Save');
-            this.setAlertMessage('error', error.response.data.message.email[0]);
+            this.$alert({
+              status: 'success',
+              message: error.response.data.message.email[0]
+            });
           }
         });
       }
@@ -860,7 +844,10 @@ export default {
         if(response.data.status === 200 && response.data.message === 'Student Update Successfully') {
           this.rowEdit = null;
           this.getStudents();
-          this.setAlertMessage('success', response.data.message);
+          this.$alert({
+            status: 'success',
+            message: response.data.message
+          });
         }
       })
       .catch(error => {
@@ -906,7 +893,10 @@ export default {
 
               this.getStudents();
 
-              this.setAlertMessage('success', 'Delete Student Succesfully');
+              this.$alert({
+                status: 'success',
+                message: 'Delete Student Succesfully'
+              });
             }
           })
           .catch(error => {
