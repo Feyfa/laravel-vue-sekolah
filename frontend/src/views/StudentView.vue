@@ -179,7 +179,7 @@
               <option value="Enam">Enam</option>
             </select>
           </td>
-          <td>{{ student.created_at }}</td>
+          <td>{{ student.created_at.replace("T", " ").replace(/\.\d+Z$/, "") }}</td>
           <td>
             <div class="flex items-center justify-center gap-4">
               <button 
