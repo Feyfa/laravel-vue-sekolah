@@ -3,7 +3,7 @@
     <ModalEmailComponent 
       :show="modalEmailComponent.show" 
       :to="modalEmailComponent.to" 
-      @hide="hiddenModalEmailComponent" />
+      @onAfterProcess="hiddenModalEmailComponent" />
 
     <div class="w-full flex justify-between items-start mb-2">
       <!-- pagination -->

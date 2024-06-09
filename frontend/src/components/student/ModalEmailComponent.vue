@@ -119,7 +119,7 @@ export default {
 
     hiddenModalEmailComponent() {
       if(!this.isSendEmail) {
-        this.$emit('hide');
+        this.$emit('onAfterProcess');
         this.sendEmail = {
           subject: '',
           content: ''
