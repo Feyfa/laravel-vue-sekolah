@@ -3,7 +3,7 @@
   <div 
     v-if="show" 
     ref="modalEmail" 
-    @click="hiddenFormSendEmail" 
+    @click="hiddenModalEmailComponent" 
     class="fixed top-0 left-0 bottom-0 right-0 bg-[rgba(0,0,0,.3)] z-40 flex justify-center items-center">
     <form 
       @submit.prevent="" 
