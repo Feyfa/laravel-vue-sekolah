@@ -15,7 +15,6 @@ class StudentController extends Controller
     {   
         $keyword = $request->input('keyword', '');
 
-        // $students = Student::all();
         $students = Student::where('nama', 'like', "%$keyword%")
                            ->orWhere('email', 'like', "%$keyword%")
                            ->orWhere('jenis_kelamin', 'like', "%$keyword%")

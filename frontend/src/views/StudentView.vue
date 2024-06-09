@@ -271,7 +271,6 @@ export default {
         total: 0
       },
       keyword: '',
-      studentBuffer: {},
       rowEdit: null,
       disabled: {
         buttonTambah: false,

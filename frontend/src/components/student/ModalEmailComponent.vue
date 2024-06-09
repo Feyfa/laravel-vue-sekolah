@@ -104,7 +104,6 @@ export default {
         $('#buttonSendEmail').html('Send Email');
 
         if(response.status === 200) {
-          this.isSendEmail = false;
           this.$alert({
             status: 'success',
             message: response.data.message
@@ -114,6 +113,18 @@ export default {
       })
       .catch(error => {
         console.error(error);
+
+        this.isSendEmail = false;
+        this.disabled = false;
+
+        this.$refs.modalEmail.classList.remove('model-email-process');
+        $('#buttonSendEmail').html('Send Email');
+
+        this.$alert({
+          status: 'error',
+          message: "Configuration Email Something Error"
+        });
+        this.hiddenModalEmailComponent();
       });
     },
 
