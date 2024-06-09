@@ -6,9 +6,15 @@ use App\Models\Student;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithLimit;
 
-class StudentsImport implements ToCollection, WithHeadingRow
+class StudentsImport implements ToCollection, WithHeadingRow, WithLimit
 {
+    public function limit(): int
+    {
+        return 1000;
+    }
+
     public function collection(Collection $rows)
     {
         $students = [];
