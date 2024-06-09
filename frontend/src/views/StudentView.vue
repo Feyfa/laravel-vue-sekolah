@@ -523,6 +523,13 @@ export default {
             this.$router.push('/login');
           });
         }
+        else {
+          this.$alert({
+            status: 'error',
+            // memisahkan banyak array menjadi 1 string, ['name required.'], ['email required.'] menjadi  "name required. email required."
+            message: Object.values(error.response.data.message).flat().join(' '),
+          });
+        }
       });
     },  
 
