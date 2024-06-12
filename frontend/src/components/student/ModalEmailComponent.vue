@@ -57,6 +57,8 @@
 
 
 <script>
+import Swal from 'sweetalert2';
+
 export default {
   props: {
     to: {
@@ -120,9 +122,10 @@ export default {
         this.$refs.modalEmail.classList.remove('model-email-process');
         $('#buttonSendEmail').html('Send Email');
 
-        this.$alert({
-          status: 'error',
-          message: "Configuration Email Something Error"
+        Swal.fire({
+          icon: "error",
+          text: error.response.data.error,
+          width: '80%'
         });
         this.hiddenModalEmailComponent();
       });
