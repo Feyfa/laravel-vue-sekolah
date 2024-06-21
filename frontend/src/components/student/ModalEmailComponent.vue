@@ -124,7 +124,8 @@ export default {
 
         Swal.fire({
           icon: "error",
-          text: error.response.data.error,
+          title: error.message.includes('timeout of') ? error.message : '', // ada 2 kemungkinan error, error dari email dan error karena timeout
+          text: error.message.includes('timeout of') ? 'Something Error Configuration Email' : error.response.data.error, // ada 2 kemungkinan error, error dari email dan error karena timeout
           width: '80%'
         });
         this.hiddenModalEmailComponent();
