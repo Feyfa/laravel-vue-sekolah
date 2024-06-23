@@ -65,7 +65,7 @@ class UserController extends Controller
 
         /* UPLOAD IMAGE TO GOOGLE DRIVE AND GET IMAGE */
         $filename = "";
-        if($request->has('file'))
+        if($request->file('file'))
         {
             // cek jika img sudah ada maka hapus
             if($user->img) 
