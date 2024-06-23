@@ -11,7 +11,7 @@
         </svg>
         <p class="text-sm text-gray-500 dark:text-gray-400 font-bold" id="message-file">Upload File xlsx</p>
       </div>
-      <input id="dropzone-file" type="file" name="file" class="hidden" :disabled="disabled" @change="importExcel"/>
+      <input id="dropzone-file" ref="dropzoneFile" type="file" name="file" class="hidden" :disabled="disabled" @change="importExcel"/>
     </label>
   </form>
 </template>
@@ -32,12 +32,13 @@ export default {
   },
 
   methods: {
-    importExcel(event) {
-      const fileExtension = event.target.files[0].name.split('.').pop();
+    importExcel() {
+      const file = this.$refs.dropzoneFile.files[0];
+      const fileExtension = file.name.split('.').pop();
 
       if(fileExtension === 'xlsx') {
-        const $formUploadFile = $('#importExcel');
-        const data = new FormData(formUploadFile);
+        const data = new FormData();
+        data.append('file', file);
 
         this.disabled = true;
         $('#message-file').html('process...');
@@ -75,7 +76,7 @@ export default {
 
                     this.$alert({
                       status: 'error',
-                      message: response.data.message
+                      message: error.response.data.message
                     });
 
                     this.$emit('onAfterProcessError');

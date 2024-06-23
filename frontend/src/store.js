@@ -34,13 +34,13 @@ export default createStore({
 
     updateUser(context, data) {
       return new Promise((resolve, reject) => {
-        axios.put(`/users/${data.id}`, {
-          name: data.name,
-          jenis_kelamin: data.jenis_kelamin,
-          tanggal_lahir: data.tanggal_lahir,
-          jabatan: data.jabatan,
-          alamat: data.alamat,
-          pendidikan: data.pendidikan,
+        axios.put(`/users/${data.get('id')}`, {
+          name: data.get('name'),
+          jenis_kelamin: data.get('jenis_kelamin'),
+          tanggal_lahir: data.get('tanggal_lahir'),
+          jabatan: data.get('jabatan'),
+          alamat: data.get('alamat'),
+          pendidikan: data.get('pendidikan'),
         })
         .then(response => {
           resolve(response);

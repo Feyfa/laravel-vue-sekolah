@@ -20,7 +20,7 @@
     <!-- dropdown menu user -->
     <div class="relative">
         <div class="flex gap-1 items-center cursor-pointer" @click="isCLickDropdown = !isCLickDropdown">
-          <img :src="UserImage" alt="user" class="w-8 h-8 rounded-full bg-white">
+          <img :src="$global.userImage" alt="user" class="w-8 h-8 rounded-full bg-white">
           <svg  
             xmlns="http://www.w3.org/2000/svg" 
             width="14" 
@@ -48,23 +48,23 @@
 <script>
 import { RouterLink } from 'vue-router';
 import TamanSiswaImage from "@/assets/imgs/tamansiswa.png";
-import UserImage from "@/assets/imgs/user.jpg";
 
 export default {
   data() {
     return {
       TamanSiswaImage: TamanSiswaImage,
-      UserImage: UserImage,
-
       isCLickDropdown: false,
     }
   },
 
   mounted() {
-
+    this.getUserImage();
   },
 
   methods: {
+    getUserImage(){
+
+    },
     showNavbar() {
       return !['/register', '/login'].includes(this.$route.path);
     },

@@ -1,13 +1,31 @@
 <template>
-  <div class="mt-16 w-[95%] mx-auto">
+  <div class="mt-16 w-[95%] mx-auto pb-5">
 
     <div>
-      <h1 class="text-center font-medium text-3xl">{{ user.name }}</h1>
+      <h1 class="text-center font-medium text-3xl">Profile Setting</h1>
     </div>
-    
+
     <!-- user setting -->
     <div class="border bg-neutral-50 border-neutral-400 shadow-md p-5 rounded mt-5">
       <h3 class="text-xl text-center">User Setting</h3>
+
+      <div class="flex flex-col items-center mt-2">
+        <img 
+          :src="$global.userImage" 
+          alt="Foto User"
+          width="120" 
+          class="border border-neutral-400 rounded shadow mb-2"/>  
+        <div
+          v-if="isEdit.user" 
+          class="mb-3">
+          <input
+            class="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-neutral-400 shadow bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal text-surface transition duration-300 ease-in-out file:-mx-3 file:-my-[0.25rem] file:me-3 file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-e file:border-solid file:border-inherit file:bg-transparent file:px-3 file:py-[0.25rem] file:text-surface focus:border-primary focus:text-gray-700 focus:shadow-inset focus:outline-none dark:border-white/70 dark:text-white file:dark:text-white"
+            type="file"
+            id="image-file"
+            ref="imageFile"
+            @change="imageFileChange" />
+        </div>
+      </div>
 
       <div class="flex justify-end items-center gap-4">
         <button 
@@ -271,6 +289,7 @@
 
 <script>
 import Swal from 'sweetalert2';
+import UserImage from "@/assets/imgs/user.jpg"
 
 export default {
   data() {
@@ -303,12 +322,13 @@ export default {
       loading: {
         user: false,
         email: false,
-      }
+      },
     }
   },
 
   mounted() {
     this.user = JSON.parse(localStorage.getItem('user'));
+    this.getUserImage();
   },
 
   methods: {
@@ -323,43 +343,88 @@ export default {
       }
     },
 
+    getUserImage(){
+
+    },
+
+    imageFileChange(event) {
+      const file = event.target.files[0];
+      // cek apakah file tipe nya image
+      const extensionValid = file ? file.type.startsWith('image/') : false;
+      // cek apakah file kurang dari 1mb
+      const sizeValid = file ? file.size <= 1000000 : false;
+
+      // jika file bukan image
+      if(!extensionValid)
+      {
+        $('#image-file').val('');
+        this.$alert({
+          status: 'error',
+          message: `The foto field must be an image`
+        });
+      }
+      // jika file di atas 1mb
+      else if(!sizeValid)
+      {
+        $('#image-file').val('');
+        this.$alert({
+          status: 'error',
+          message: `The foto field must not be greater than 1024 kilobytes`
+        });
+      }
+      else
+      {
+        const oFReader = new FileReader();
+
+        oFReader.readAsDataURL(file);
+
+        oFReader.onload = (OFREvent) => {
+          this.$global.userImage = OFREvent.target.result;
+        }
+      }
+    },
+
     updateUser() {
       if(this.user.name === '')
       {
         this.userUpdateError.name = 'name is required';
       }
       else 
-      {
+      { 
+        const data = new FormData();
+        data.append('id', this.user.id);
+        data.append('name', this.user.name);
+        data.append('jenis_kelamin', this.user.jenis_kelamin);
+        data.append('jabatan', this.user.jabatan);
+        data.append('tanggal_lahir', this.user.tanggal_lahir);
+        data.append('alamat', this.user.alamat);
+        data.append('pendidikan', this.user.pendidikan);
+
         this.loading.user = true;
-        this.$store.dispatch('updateUser', {
-          id: this.user.id,
-          name: this.user.name,
-          jenis_kelamin: this.user.jenis_kelamin,
-          jabatan: this.user.jabatan,
-          tanggal_lahir: this.user.tanggal_lahir,
-          alamat: this.user.alamat,
-          pendidikan: this.user.pendidikan,
-        })
-        .then(response => {
-          console.log(response);
-          if(response.status === 200) {
-            this.isEdit.user = false;
-            this.loading.user = false;
-            this.$alert({
-              status: 'success',
-              message: response.data.message
-            })
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
+        this.$store.dispatch('updateUser', data)
+                   .then(response => {
+                    console.log(response);
+                    if(response.status === 200) {
+                      this.isEdit.user = false;
+                      this.loading.user = false;
+                      this.$alert({
+                        status: 'success',
+                        message: response.data.message
+                      })
+                      localStorage.setItem('user', JSON.stringify(response.data.user));
+                    }
+                   })
+                   .catch(error => {
+                    console.error(error);
+                   });
       }
     },
 
     cancelEditUser() {
       this.isEdit.user = false;
+      this.$global.userImage = UserImage;
+      
+      $('#image-file').val('');
 
       this.user.name = this.$store.getters.user.name;
       this.user.jenis_kelamin = this.$store.getters.user.jenis_kelamin;
@@ -425,17 +490,6 @@ export default {
     
       this.userUpdateError.email = "";
     },
-
-    inputTypeDateValidation(type) {
-      const lastChar = this.user.mail_port.slice(-1);
-      
-      if(type === 'integer') {
-        if (/\D/.test(lastChar)) {
-          this.user.mail_port = this.user.mail_port.slice(0, -1);
-        }
-      }
-      
-    }
   },
 }
 </script>
