@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::resource('students', StudentController::class);
     Route::resource('users', UserController::class);
+    Route::get('/users/image/{path}', [UserController::class, 'getImage']);
     Route::put('/users/email/{id}', [UserController::class, 'updateEmail']);
     Route::get('/students/export/excel', [ExcelController::class, 'export']);
     Route::post('/students/import/excel', [ExcelController::class, 'import']);

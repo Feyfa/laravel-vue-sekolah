@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Email;
+use Yaza\LaravelGoogleDriveStorage\Gdrive;
 
 class UserController extends Controller
 {
@@ -48,6 +51,7 @@ class UserController extends Controller
         $user = User::where('id', $id)
                     ->first();
 
+        /* VALIDATION USER */
         if(!$user)
             return response()->json(['status' => 404, 'message' => 'User Not Fond'], 404);
 
@@ -57,8 +61,31 @@ class UserController extends Controller
         
         if($validator->fails())
             return response()->json(['status' => 422, 'message' => $validator->messages()], 422);
+        /* VALIDATION USER */
+
+        /* UPLOAD IMAGE TO GOOGLE DRIVE AND GET IMAGE */
+        $filename = "";
+        if($request->has('file'))
+        {
+            // cek jika img sudah ada maka hapus
+            if($user->img) 
+            {
+                Gdrive::delete($user->img);
+            }
+
+            $filename = $id . "-" . Carbon::now()->timestamp . "." .$request->file('file')->getClientOriginalExtension();
+            Gdrive::put($filename, $request->file('file')->getRealPath());
+        }
+        /* UPLOAD IMAGE TO GOOGLE DRIVE AND GET IMAGE */
+
+        /* GET IMAGE FROM GOOGLE DRIVE */
+        $img = $filename ? Gdrive::get($filename) : Gdrive::get($user->img);
+        $img->file = base64_encode($img->file);
+        $userImage = "data:$img->ext;base64,$img->file";
+        /* GET IMAGE FROM GOOGLE DRIVE */
         
         $result = $user->update([
+            'img' => $filename,
             'name' => $request->name,
             'jenis_kelamin' => $request->jenis_kelamin,
             'tanggal_lahir' => $request->tanggal_lahir,
@@ -68,7 +95,7 @@ class UserController extends Controller
         ]);
 
         return $result ?
-               response()->json(['status' => 200, 'message' => 'User Update Successfully', 'user' => $user], 200) : 
+               response()->json(['status' => 200, 'message' => 'User Update Successfully', 'user' => $user, 'userImage' => $userImage], 200) : 
                response()->json(['status' => 500, 'message' => 'Something Went Error'], 500) ;
     }
 

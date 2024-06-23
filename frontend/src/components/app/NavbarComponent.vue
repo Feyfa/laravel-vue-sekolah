@@ -48,6 +48,7 @@
 <script>
 import { RouterLink } from 'vue-router';
 import TamanSiswaImage from "@/assets/imgs/tamansiswa.png";
+import UserImage from "@/assets/imgs/user.jpg";
 
 export default {
   data() {
@@ -58,13 +59,10 @@ export default {
   },
 
   mounted() {
-    this.getUserImage();
+    this.$global.userImage = localStorage.getItem('userImage') ? JSON.parse(localStorage.getItem('userImage')) : UserImage;
   },
 
   methods: {
-    getUserImage(){
-
-    },
     showNavbar() {
       return !['/register', '/login'].includes(this.$route.path);
     },
@@ -76,6 +74,7 @@ export default {
                   if(response.status === 200 && response.data.message === 'logout success') {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
+                    localStorage.removeItem('userImage');
                     this.isCLickDropdown = false;
                     this.$router.push('/login');
                   }

@@ -3,16 +3,34 @@ import axios from "@/axios";
 
 export default createStore({
   state: {
-    user: ''
+    user: '',
+    userImage: ''
   },
 
   getters: {
-    user: state => state.user
+    user: state => state.user,
+    userImage: state => state.userImage
   },
 
   actions: {
     fetchUserFromLocalStorage() {
       this.state.user = JSON.parse(localStorage.getItem('user'));
+    },
+
+    fetchimgFileFromLocalStorage() {
+      this.state.userImage = JSON.parse(localStorage.getItem('userImage'));
+    },
+
+    fetchUserImageFromGoogleDrive(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.get(`/users/image/${data.path}`)
+             .then(response => {
+              resolve(response);
+             })
+             .catch(error => {
+              reject(error);
+             })
+      })
     },
 
     processSendEmail(context, data) {
@@ -34,20 +52,14 @@ export default createStore({
 
     updateUser(context, data) {
       return new Promise((resolve, reject) => {
-        axios.put(`/users/${data.get('id')}`, {
-          name: data.get('name'),
-          jenis_kelamin: data.get('jenis_kelamin'),
-          tanggal_lahir: data.get('tanggal_lahir'),
-          jabatan: data.get('jabatan'),
-          alamat: data.get('alamat'),
-          pendidikan: data.get('pendidikan'),
-        })
-        .then(response => {
-          resolve(response);
-        }) 
-        .catch(error => {
-          reject(error);
-        });
+        // axios.post ini di override menjadi put
+        axios.post(`/users/${data.get('id')}`, data)
+             .then(response => {
+              resolve(response);
+             }) 
+             .catch(error => {
+              reject(error);
+             });
       });
     },
 

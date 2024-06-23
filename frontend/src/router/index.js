@@ -40,6 +40,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   store.dispatch('fetchUserFromLocalStorage');
+  store.dispatch('fetchimgFileFromLocalStorage');
 
   // ambil token
   const token = localStorage.getItem('token');

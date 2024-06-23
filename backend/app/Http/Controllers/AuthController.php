@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Yaza\LaravelGoogleDriveStorage\Gdrive;
 
 class AuthController extends Controller
 {
@@ -42,7 +43,17 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)
                     ->first();
 
-        return response()->json(['status' => 200, 'message' => 'login success', 'token' => $token, 'user' => $user], 200);
+        /* GET IMAGE FROM GOOGLE DRIVE */
+        $userImage = '';
+        if($user->img)
+        {
+            $img = Gdrive::get($user->img);
+            $img->file = base64_encode($img->file);
+            $userImage = "data:$img->ext;base64,$img->file";
+        }
+        /* GET IMAGE FROM GOOGLE DRIVE */
+
+        return response()->json(['status' => 200, 'message' => 'login success', 'token' => $token, 'user' => $user, 'userImage' => $userImage], 200);
     }
 
     public function logout(Request $request)

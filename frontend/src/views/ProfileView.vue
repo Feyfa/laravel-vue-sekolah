@@ -23,6 +23,7 @@
             type="file"
             id="image-file"
             ref="imageFile"
+            name="file"
             @change="imageFileChange" />
         </div>
       </div>
@@ -328,7 +329,6 @@ export default {
 
   mounted() {
     this.user = JSON.parse(localStorage.getItem('user'));
-    this.getUserImage();
   },
 
   methods: {
@@ -341,10 +341,6 @@ export default {
           this.userUpdateError.email = this.user.email.trim() === '' ? 'email is required' : '';
           break;
       }
-    },
-
-    getUserImage(){
-
     },
 
     imageFileChange(event) {
@@ -392,7 +388,11 @@ export default {
       else 
       { 
         const data = new FormData();
+        // walaupun saya di store.js menggunaka axios.post
+        // sebenarnya dia override menjadi put, karena saat mengirimkan file hanya bisa post dan tidak bisa put
+        data.append('_method', 'PUT');
         data.append('id', this.user.id);
+        data.append('file', this.$refs.imageFile.files[0]);
         data.append('name', this.user.name);
         data.append('jenis_kelamin', this.user.jenis_kelamin);
         data.append('jabatan', this.user.jabatan);
@@ -412,6 +412,7 @@ export default {
                         message: response.data.message
                       })
                       localStorage.setItem('user', JSON.stringify(response.data.user));
+                      localStorage.setItem('userImage', JSON.stringify(response.data.userImage));
                     }
                    })
                    .catch(error => {
@@ -422,7 +423,7 @@ export default {
 
     cancelEditUser() {
       this.isEdit.user = false;
-      this.$global.userImage = UserImage;
+      this.$global.userImage = this.$store.getters.userImage ? this.$store.getters.userImage : UserImage;
       
       $('#image-file').val('');
 

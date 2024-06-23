@@ -17,6 +17,6 @@ class ExcelController extends Controller
     public function import(Request $request)
     {
         Excel::import(new StudentsImport, $request->file('file')->getRealPath());
-        return response()->json(['status' => 200, 'message'=> 'Import Add Successfully'], 200);
+        return response()->json(['status' => 200, 'message'=> 'Import Add Successfully', 'file' => $request->file('file')], 200);
     }
 }
