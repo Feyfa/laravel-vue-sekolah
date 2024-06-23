@@ -59,7 +59,7 @@ export default {
   },
 
   mounted() {
-    this.$global.userImage = localStorage.getItem('userImage') ? JSON.parse(localStorage.getItem('userImage')) : UserImage;
+    this.$global.userImage = JSON.parse(localStorage.getItem('userImage')) !== "" ? JSON.parse(localStorage.getItem('userImage')) : UserImage;
   },
 
   methods: {

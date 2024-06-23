@@ -48,6 +48,7 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        Log::info('u', ['file' > $request->file('file')]);
         $user = User::where('id', $id)
                     ->first();
 
@@ -65,7 +66,7 @@ class UserController extends Controller
 
         /* UPLOAD IMAGE TO GOOGLE DRIVE AND GET IMAGE */
         $filename = "";
-        if($request->file('file'))
+        if($request->hasFile('file'))
         {
             // cek jika img sudah ada maka hapus
             if($user->img) 

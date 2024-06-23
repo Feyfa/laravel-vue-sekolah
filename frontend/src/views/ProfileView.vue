@@ -404,6 +404,7 @@ export default {
         this.$store.dispatch('updateUser', data)
                    .then(response => {
                     console.log(response);
+                    $('#image-file').val('');
                     if(response.status === 200) {
                       this.isEdit.user = false;
                       this.loading.user = false;
