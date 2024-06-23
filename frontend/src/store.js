@@ -36,6 +36,24 @@ export default createStore({
       return new Promise((resolve, reject) => {
         axios.put(`/users/${data.id}`, {
           name: data.name,
+          jenis_kelamin: data.jenis_kelamin,
+          tanggal_lahir: data.tanggal_lahir,
+          jabatan: data.jabatan,
+          alamat: data.alamat,
+          pendidikan: data.pendidikan,
+        })
+        .then(response => {
+          resolve(response);
+        }) 
+        .catch(error => {
+          reject(error);
+        });
+      });
+    },
+
+    updateEmail(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.put(`/users/email/${data.id}`, {
           email: data.email,
           mail_mailer: data.mail_mailer,
           mail_host: data.mail_host,

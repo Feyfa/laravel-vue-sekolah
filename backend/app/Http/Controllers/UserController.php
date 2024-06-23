@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\View;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mime\Email;
 
 class UserController extends Controller
 {
@@ -30,7 +33,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::where('id', $id)
-                       ->first();
+                    ->first();
 
         return ($user) ? 
                response()->json(['status' => 200, 'user' => $user], 200) : 
@@ -43,14 +46,13 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::where('id', $id)
-                       ->first();
+                    ->first();
 
         if(!$user)
             return response()->json(['status' => 404, 'message' => 'User Not Fond'], 404);
 
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string'],
-            'email' => ['required', 'email'],
         ]);
         
         if($validator->fails())
@@ -58,20 +60,98 @@ class UserController extends Controller
         
         $result = $user->update([
             'name' => $request->name,
-            'email' => $request->email,
-            'mail_mailer' => $request->mail_mailer,
-            'mail_host' => $request->mail_host,
-            'mail_port' => $request->mail_port,
-            'mail_password' => $request->mail_password,
-            'mail_encryption' => $request->mail_encryption,
-            'mail_username' => $request->email,
-            'mail_from_address' => $request->email,
-            'mail_from_name' => explode('@', $request->email)[0],
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'jabatan' => $request->jabatan,
+            'alamat' => $request->alamat,
+            'pendidikan' => $request->pendidikan,
         ]);
 
         return $result ?
                response()->json(['status' => 200, 'message' => 'User Update Successfully', 'user' => $user], 200) : 
                response()->json(['status' => 500, 'message' => 'Something Went Error'], 500) ;
+    }
+
+    public function updateEmail(Request $request, string $id)
+    {
+        $user = User::where('id', $id)
+                    ->first();
+
+        if(!$user)
+            return response()->json(['status' => 404, 'message' => 'User Not Fond'], 404);
+
+        $validator = Validator::make($request->all(), [
+            'email' => ['required', 'string'],
+        ]);
+
+        if($validator->fails())
+            return response()->json(['status' => 422, 'message' => $validator->messages()], 422);
+
+        $emailSetting = (object) [
+            'mail_host' => $request->mail_host,
+            'mail_port' => $request->mail_port,
+            'mail_encryption' => $request->mail_encryption,
+            'mail_username' => $request->email,
+            'mail_password' => $request->mail_password,
+        ];
+
+        // Set the mail transport
+        $mailer = $this->setMailTransport($emailSetting);
+
+        // Create and send email
+        if ($mailer) 
+        {
+            try
+            {
+                $subject = "Set Email SMK TAMANASISWA 2 JAKARTA";
+                $content = <<<EOT
+                    {$request->email} successfully set
+                    mailer: {$request->mail_mailer}
+                    email: {$request->email}
+                    host: {$request->mail_host}
+                    port: {$request->mail_port}
+                    password: {$request->mail_password}
+                    encryption: {$request->mail_encryption}
+                EOT;
+                $content = nl2br($content);
+
+                // Render Blade template with data
+                $emailContent = View::make('emails.template')
+                                    ->with('content', $content)
+                                    ->render();
+    
+                $email = (new Email())->from($user->mail_from_address)
+                                      ->to($user->mail_from_address)
+                                      ->subject($subject)
+                                      ->html($emailContent);
+    
+                $mailer->send($email);
+    
+                $result = $user->update([
+                    'email' => $request->email,
+                    'mail_mailer' => $request->mail_mailer,
+                    'mail_host' => $request->mail_host,
+                    'mail_port' => $request->mail_port,
+                    'mail_password' => $request->mail_password,
+                    'mail_encryption' => $request->mail_encryption,
+                    'mail_username' => $request->email,
+                    'mail_from_address' => $request->email,
+                    'mail_from_name' => explode('@', $request->email)[0],
+                ]);
+        
+                return $result ?
+                       response()->json(['status' => 200, 'message' => 'Email Update Successfully', 'user' => $user], 200) : 
+                       response()->json(['status' => 500, 'message' => 'Something Went Error'], 500) ;
+            }
+            catch (TransportExceptionInterface $e)
+            {
+                return response()->json(['message' => $e->getMessage()], 500);
+            }
+        } 
+        else 
+        {
+            return response()->json(['message' => 'Failed to send email. User not found.'], 500);
+        }
     }
 
     /**
