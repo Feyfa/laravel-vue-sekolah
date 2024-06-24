@@ -74,9 +74,12 @@ export default {
                     $('#message-file').html('Upload File xlsx');
                     $('#dropzone-file').val('');
 
+                    let errorMessage = Object.values(error.response.data.message);
+                    errorMessage = errorMessage.join(',');
+
                     this.$alert({
                       status: 'error',
-                      message: error.response.data.message
+                      message: errorMessage
                     });
 
                     this.$emit('onAfterProcessError');

@@ -48,17 +48,21 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        Log::info('u', ['file' > $request->file('file')]);
         $user = User::where('id', $id)
                     ->first();
 
         /* VALIDATION USER */
+        $rules = [
+            'name' => ['required', 'string']
+        ];
+        
         if(!$user)
             return response()->json(['status' => 404, 'message' => 'User Not Fond'], 404);
 
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string'],
-        ]);
+        if($request->hasFile('file')) 
+            $rules['file'] = ['image', 'mimes:jpeg,png,jpg,gif,svg', 'max:1024'];
+
+        $validator = Validator::make($request->all(), $rules);
         
         if($validator->fails())
             return response()->json(['status' => 422, 'message' => $validator->messages()], 422);
@@ -69,7 +73,7 @@ class UserController extends Controller
         if($request->hasFile('file'))
         {
             // cek jika img sudah ada maka hapus
-            if($user->img) 
+            if(!empty($user->img)) 
             {
                 Gdrive::delete($user->img);
             }
@@ -80,9 +84,13 @@ class UserController extends Controller
         /* UPLOAD IMAGE TO GOOGLE DRIVE AND GET IMAGE */
 
         /* GET IMAGE FROM GOOGLE DRIVE */
-        $img = $filename ? Gdrive::get($filename) : Gdrive::get($user->img);
-        $img->file = base64_encode($img->file);
-        $userImage = "data:$img->ext;base64,$img->file";
+        $userImage = "";
+        if($filename)
+        {
+            $img = Gdrive::get($filename);
+            $img->file = base64_encode($img->file);
+            $userImage = "data:$img->ext;base64,$img->file";
+        }
         /* GET IMAGE FROM GOOGLE DRIVE */
         
         $result = $user->update([

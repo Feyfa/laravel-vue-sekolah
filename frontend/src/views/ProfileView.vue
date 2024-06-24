@@ -408,16 +408,29 @@ export default {
                     if(response.status === 200) {
                       this.isEdit.user = false;
                       this.loading.user = false;
+
                       this.$alert({
                         status: 'success',
                         message: response.data.message
                       })
+
                       localStorage.setItem('user', JSON.stringify(response.data.user));
-                      localStorage.setItem('userImage', JSON.stringify(response.data.userImage));
+                      if(response.data.userImage) localStorage.setItem('userImage', JSON.stringify(response.data.userImage));
                     }
                    })
                    .catch(error => {
                     console.error(error);
+
+                    $('#image-file').val('');
+                    this.loading.user = false;
+
+                    let errorMessage = Object.values(error.response.data.message);
+                    errorMessage = errorMessage.join(',');
+
+                    this.$alert({
+                      status: 'error',
+                      message: errorMessage
+                    })
                    });
       }
     },
