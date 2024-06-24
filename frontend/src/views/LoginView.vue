@@ -62,6 +62,7 @@
 <script>
 import Swal from "sweetalert2";
 import { RouterLink } from "vue-router";
+import UserImage from "@/assets/imgs/user.jpg";
 
 export default {
   data() {
@@ -120,6 +121,8 @@ export default {
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
             localStorage.setItem('userImage', JSON.stringify(response.data.userImage));
+
+            this.$global.userImage = JSON.parse(localStorage.getItem('userImage')) !== "" ? JSON.parse(localStorage.getItem('userImage')) : UserImage;
 
             this.$router.push('/');
           }

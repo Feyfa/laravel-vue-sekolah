@@ -73,7 +73,7 @@ class UserController extends Controller
         if($request->hasFile('file'))
         {
             // cek jika img sudah ada maka hapus
-            if(!empty($user->img)) 
+            if($user->img) 
             {
                 Gdrive::delete($user->img);
             }
@@ -83,29 +83,26 @@ class UserController extends Controller
         }
         /* UPLOAD IMAGE TO GOOGLE DRIVE AND GET IMAGE */
 
-        /* GET IMAGE FROM GOOGLE DRIVE */
+        /* GET IMAGE FROM GOOGLE DRIVE AND UPDATE TO FIELD img */
         $userImage = "";
         if($filename)
         {
+            $user->img = $filename;
             $img = Gdrive::get($filename);
             $img->file = base64_encode($img->file);
             $userImage = "data:$img->ext;base64,$img->file";
         }
-        /* GET IMAGE FROM GOOGLE DRIVE */
+        /* GET IMAGE FROM GOOGLE DRIVE AND UPDATE TO FIELD img */
         
-        $result = $user->update([
-            'img' => $filename,
-            'name' => $request->name,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'jabatan' => $request->jabatan,
-            'alamat' => $request->alamat,
-            'pendidikan' => $request->pendidikan,
-        ]);
+        $user->name = $request->name;
+        $user->jenis_kelamin = $request->jenis_kelamin;
+        $user->tanggal_lahir = $request->tanggal_lahir;
+        $user->jabatan = $request->jabatan;
+        $user->alamat = $request->alamat;
+        $user->pendidikan = $request->pendidikan;
+        $user->save();
 
-        return $result ?
-               response()->json(['status' => 200, 'message' => 'User Update Successfully', 'user' => $user, 'userImage' => $userImage], 200) : 
-               response()->json(['status' => 500, 'message' => 'Something Went Error'], 500) ;
+        return response()->json(['status' => 200, 'message' => 'User Update Successfully', 'user' => $user, 'userImage' => $userImage], 200);
     }
 
     public function updateEmail(Request $request, string $id)
