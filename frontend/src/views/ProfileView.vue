@@ -10,11 +10,26 @@
       <h3 class="text-xl text-center">User Setting</h3>
 
       <div class="flex flex-col items-center mt-2">
+        <!-- zoom img -->
+        <div 
+          v-if="isZoomUserImage"
+          class="z-50 fixed top-0 left-0 bottom-0 right-0 bg-[rgba(0,0,0,.7)] flex justify-center items-center cursor-zoom-out"
+          @click="zoomUserImage('out')">
+          <img 
+            :src="$global.userImage" 
+            alt="Foto User"
+            width="500"
+            class="border border-neutral-400 rounded-md shadow-xl cursor-default"
+            @click.stop/>  
+        </div>
+        <!-- zoom img -->
+
         <img 
           :src="$global.userImage" 
           alt="Foto User"
           width="120" 
-          class="border border-neutral-400 rounded shadow mb-2"/>  
+          class="border border-neutral-400 rounded shadow mb-2 cursor-zoom-in"
+          @click="zoomUserImage('in')"/>  
         <div
           v-if="isEdit.user" 
           class="mb-3">
@@ -324,6 +339,7 @@ export default {
         user: false,
         email: false,
       },
+      isZoomUserImage: false,
     }
   },
 
@@ -332,6 +348,10 @@ export default {
   },
 
   methods: {
+    zoomUserImage(type) {
+      this.isZoomUserImage = (type === 'in') ? true : false;
+    },
+
     inputValidation(type) {
       switch (type) {
         case 'name' : 
