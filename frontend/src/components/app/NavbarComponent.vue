@@ -19,25 +19,25 @@
     </div>
     <!-- dropdown menu user -->
     <div class="relative">
-        <div class="flex gap-1 items-center cursor-pointer" @click="isCLickDropdown = !isCLickDropdown">
+        <div class="flex gap-1 items-center cursor-pointer" @click.stop="showDropdown">
           <img :src="$global.userImage" alt="user" class="w-8 h-8 rounded-full bg-white">
           <svg  
             xmlns="http://www.w3.org/2000/svg" 
             width="14" 
             height="14" 
             fill="currentColor" 
-            class="bi bi-caret-down-fill transition-all duration-300 ease-in-out" 
-            :class="{'transform rotate-180': isCLickDropdown}" 
+            class="bi bi-caret-down-fill transition-all duration-75 ease-in-out" 
+            :class="{'transform rotate-180': $global.isCLickDropdown.navbar}" 
             viewBox="0 0 16 16">
             <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
           </svg>
         </div>
-        <ul class="absolute bg-white z-50 mt-2 right-0 rounded transition-all duration-300 ease-in-out overflow-hidden h-0" :class="{'border border-neutral-500 h-[4.5rem] p-2 shadow-lg': isCLickDropdown}">
+        <ul class="absolute bg-white z-50 mt-2 right-0 rounded transition-all duration-75 ease-in-out overflow-hidden h-0" :class="{'border border-neutral-500 h-[4.5rem] p-2 shadow-lg': $global.isCLickDropdown.navbar}">
           <li>
-            <a class="inline-block px-1 rounded w-36 h-7 leading-7 hover:bg-[#5AB2FF]" href="/profile">Profile</a>
+            <a class="inline-block px-1 rounded w-36 h-7 leading-7 hover:bg-[#5AB2FF]" href="/profile" @click.stop>Profile</a>
           </li>
           <li>
-            <span class="inline-block px-1 rounded w-36 h-7 leading-7 hover:bg-[#5AB2FF] cursor-pointer" @click="logout">Logout</span>
+            <span class="inline-block px-1 rounded w-36 h-7 leading-7 hover:bg-[#5AB2FF] cursor-pointer" @click="logout" @click.stop>Logout</span>
           </li>
         </ul>
       </div>
@@ -54,7 +54,6 @@ export default {
   data() {
     return {
       TamanSiswaImage: TamanSiswaImage,
-      isCLickDropdown: false,
     }
   },
 
@@ -63,6 +62,11 @@ export default {
   },
 
   methods: {
+    showDropdown() {
+      this.$global.isCLickDropdown.navbar = !this.$global.isCLickDropdown.navbar;
+      if(this.$global.isCLickDropdown.profile) this.$global.isCLickDropdown.profile = false
+    },
+
     showNavbar() {
       return !['/register', '/login'].includes(this.$route.path);
     },

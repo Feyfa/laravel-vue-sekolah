@@ -30,6 +30,56 @@ class UserController extends Controller
         //
     }
 
+    public function uploadImage(Request $request)
+    {
+        $user = User::where('id', $request->id)
+                    ->first();
+    
+        $validator = Validator::make($request->all(), [
+            'id' => ['required', 'integer'],
+            'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:1024']
+        ]);
+
+        if($validator->fails())
+            return response()->json(['status' => 422, 'message' => $validator->messages()], 422);
+
+        if(!$user)
+            return response()->json(['status' => 404, 'message' => 'User Not Found'], 404);
+
+        if($user->img) 
+            Gdrive::delete($user->img);
+
+        $filename = $request->id . "-" . Carbon::now()->timestamp . "." .$request->file('file')->getClientOriginalExtension();
+        Gdrive::put($filename, $request->file('file')->getRealPath());
+
+        $user->img = $filename;
+        $user->save();
+
+        $img = Gdrive::get($user->img);
+        $img->file = base64_encode($img->file);
+        $userImage = "data:$img->ext;base64,$img->file";
+        
+        return response()->json(['status' => 200, 'message' => 'Upload Image Successfully', 'user' => $user, 'userImage' => $userImage], 200);
+    }
+
+    public function deleteImage(string $id)
+    {
+        $user = User::where('id', $id)
+                    ->first();
+
+        if(!$user)
+            return response()->json(['status' => 404, 'message' => 'User Not Found'], 404);
+
+        if(!$user->img) 
+            return response()->json(['status' => 404, 'message' => 'Image Not Found'], 404);
+
+        Gdrive::delete($user->img);
+        $user->img = "";
+        $user->save();
+
+        return response()->json(['status' => 200, 'message' => 'Delete Image Successfully', 'user' => $user, 'userImage' => ""], 200);
+    }
+
     /**
      * Display the specified resource.
      */
@@ -40,7 +90,7 @@ class UserController extends Controller
 
         return ($user) ? 
                response()->json(['status' => 200, 'user' => $user], 200) : 
-               response()->json(['status' => 404, 'message' => 'User Not Fond'], 404) ;
+               response()->json(['status' => 404, 'message' => 'User Not Found'], 404) ;
     }
 
     /**
@@ -51,48 +101,17 @@ class UserController extends Controller
         $user = User::where('id', $id)
                     ->first();
 
-        /* VALIDATION USER */
-        $rules = [
-            'name' => ['required', 'string']
-        ];
-        
+        /* VALIDATION USER */        
         if(!$user)
-            return response()->json(['status' => 404, 'message' => 'User Not Fond'], 404);
+            return response()->json(['status' => 404, 'message' => 'User Not Found'], 404);
 
-        if($request->hasFile('file')) 
-            $rules['file'] = ['image', 'mimes:jpeg,png,jpg,gif,svg', 'max:1024'];
-
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string']
+        ]);
         
         if($validator->fails())
             return response()->json(['status' => 422, 'message' => $validator->messages()], 422);
         /* VALIDATION USER */
-
-        /* UPLOAD IMAGE TO GOOGLE DRIVE AND GET IMAGE */
-        $filename = "";
-        if($request->hasFile('file'))
-        {
-            // cek jika img sudah ada maka hapus
-            if($user->img) 
-            {
-                Gdrive::delete($user->img);
-            }
-
-            $filename = $id . "-" . Carbon::now()->timestamp . "." .$request->file('file')->getClientOriginalExtension();
-            Gdrive::put($filename, $request->file('file')->getRealPath());
-        }
-        /* UPLOAD IMAGE TO GOOGLE DRIVE AND GET IMAGE */
-
-        /* GET IMAGE FROM GOOGLE DRIVE AND UPDATE TO FIELD img */
-        $userImage = "";
-        if($filename)
-        {
-            $user->img = $filename;
-            $img = Gdrive::get($filename);
-            $img->file = base64_encode($img->file);
-            $userImage = "data:$img->ext;base64,$img->file";
-        }
-        /* GET IMAGE FROM GOOGLE DRIVE AND UPDATE TO FIELD img */
         
         $user->name = $request->name;
         $user->jenis_kelamin = $request->jenis_kelamin;
@@ -102,7 +121,7 @@ class UserController extends Controller
         $user->pendidikan = $request->pendidikan;
         $user->save();
 
-        return response()->json(['status' => 200, 'message' => 'User Update Successfully', 'user' => $user, 'userImage' => $userImage], 200);
+        return response()->json(['status' => 200, 'message' => 'User Update Successfully', 'user' => $user], 200);
     }
 
     public function updateEmail(Request $request, string $id)
@@ -111,7 +130,7 @@ class UserController extends Controller
                     ->first();
 
         if(!$user)
-            return response()->json(['status' => 404, 'message' => 'User Not Fond'], 404);
+            return response()->json(['status' => 404, 'message' => 'User Not Found'], 404);
 
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'string'],

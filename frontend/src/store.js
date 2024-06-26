@@ -33,6 +33,30 @@ export default createStore({
       })
     },
 
+    uploadImage(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.post('/users/image', data)
+             .then(response => {
+              resolve(response);
+             })
+             .catch(error => {
+              reject(error);
+             })
+      });
+    },
+
+    deleteImage(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.delete(`/users/image/${data.id}`)
+             .then(response => {
+              resolve(response);
+             })
+             .catch(error => {
+              reject(error);
+             })
+      });
+    },
+
     processSendEmail(context, data) {
       return new Promise((resolve, reject) => {
         axios.post('/sendemail', {
@@ -53,13 +77,21 @@ export default createStore({
     updateUser(context, data) {
       return new Promise((resolve, reject) => {
         // axios.post ini di override menjadi put
-        axios.post(`/users/${data.get('id')}`, data)
-             .then(response => {
-              resolve(response);
-             }) 
-             .catch(error => {
-              reject(error);
-             });
+        axios.put(`/users/${data.id}`, {
+          file: data.file,
+          name: data.name,
+          jenis_kelamin: data.jenis_kelamin,
+          jabatan: data.jabatan,
+          tanggal_lahir: data.tanggal_lahir,
+          alamat: data.alamat,
+          pendidikan: data.pendidikan,
+        })
+        .then(response => {
+          resolve(response);
+        }) 
+        .catch(error => {
+          reject(error);
+        });
       });
     },
 

@@ -28,12 +28,19 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tokenvalidation', [AuthController::class, 'tokenValidation']);
+    
     Route::post('/logout', [AuthController::class, 'logout']);
+    
     Route::resource('students', StudentController::class);
+    
     Route::resource('users', UserController::class);
     Route::get('/users/image/{path}', [UserController::class, 'getImage']);
+    Route::post('/users/image', [UserController::class, 'uploadImage']);
+    Route::delete('/users/image/{id}', [UserController::class, 'deleteImage']);
     Route::put('/users/email/{id}', [UserController::class, 'updateEmail']);
+    
     Route::get('/students/export/excel', [ExcelController::class, 'export']);
     Route::post('/students/import/excel', [ExcelController::class, 'import']);
+    
     Route::post('/sendemail', [EmailController::class, 'sendEmail']);
 });
