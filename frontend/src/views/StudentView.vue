@@ -210,9 +210,12 @@
               </button>
             </div>
             <div class="flex items-center justify-center" :class="{'hidden': rowEdit === index}">
-              <button 
+              <button
                 @click="showModalEmailComponent(student.email)">
-                <i class="bi bi-envelope"></i>
+                <i
+                  class="bi bi-envelope"
+                  :class="{'opacity-50 cursor-default': !this.$store.getters.user.emailActive}">
+                </i>
               </button>
             </div>
           </td>
@@ -340,8 +343,15 @@ export default {
 
     // menampilkan mode email component
     showModalEmailComponent(email) {
-      this.modalEmailComponent.show = true;
-      this.modalEmailComponent.to = email;
+      if(this.$store.getters.user.emailActive) {
+        this.modalEmailComponent.show = true;
+        this.modalEmailComponent.to = email;
+      } else {
+        this.$alert({
+          status: 'error',
+          message: 'Your email settings are not complete <a href="/profile#email-setting" class="underline">click here</a>'
+        })
+      }
     },
 
     // menampilkan form input excel

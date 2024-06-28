@@ -57,8 +57,9 @@
         @click="registerSubmit" 
         type="button" 
         id="button-register"
-        class="button-register w-full border border-neutral-500 rounded bg-zinc-100 hover:bg-zinc-200 shadow py-2"
-        :class="{'opacity-70 hover:scale-100 hover:shadow-none hover:bg-gray-200': buttonRegisterDisabled}">
+        :disabled="buttonRegisterDisabled"
+        class="button-register w-full border border-neutral-500 rounded bg-zinc-100 py-2"
+        :class="{'opacity-70': buttonRegisterDisabled, 'hover:bg-zinc-200 shadow':!buttonRegisterDisabled}">
         Register
       </button>
     </form>

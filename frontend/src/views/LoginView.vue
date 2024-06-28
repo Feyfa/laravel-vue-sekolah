@@ -50,8 +50,9 @@
         @click="loginSubmit" 
         type="button" 
         id="button-login"
-        class="button-login w-full border border-neutral-500 rounded bg-zinc-100 hover:bg-zinc-200 shadow py-2"
-        :class="{'opacity-70 hover:scale-100 hover:shadow-none hover:bg-gray-200': buttonloginDisabled}">
+        :disabled="buttonloginDisabled"
+        class="button-login w-full border border-neutral-500 rounded bg-zinc-100 py-2"
+        :class="{'opacity-70': buttonloginDisabled , 'hover:bg-zinc-200 shadow': !buttonloginDisabled}">
         login
       </button>
     </form>

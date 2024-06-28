@@ -43,6 +43,13 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)
                     ->first();
 
+        /* CHECK WHETHER THE EMAIL SETTINGS HAVE BEEN FILLED IN SUCCESSFULLY */
+        if($user->email && $user->mail_mailer && $user->mail_host && $user->mail_port && $user->mail_username && $user->mail_password && $user->mail_encryption && $user->mail_from_address && $user->mail_from_name)
+            $user->emailActive = true;
+        else
+            $user->emailActive = false;
+        /* CHECK WHETHER THE EMAIL SETTINGS HAVE BEEN FILLED IN SUCCESSFULLY */
+
         /* GET IMAGE FROM GOOGLE DRIVE */
         $userImage = '';
         if($user->img)
