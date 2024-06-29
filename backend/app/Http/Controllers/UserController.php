@@ -136,7 +136,7 @@ class UserController extends Controller
 
         /* VALIDATOR EMAIL */
         $validator = Validator::make($request->all(), [
-            'email' => ['required', 'string'],
+            'email' => ['required', 'string', 'email'],
         ]);
 
         if($validator->fails())

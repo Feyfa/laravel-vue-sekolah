@@ -621,8 +621,18 @@ export default {
           if(error.response.status === 409) {
             this.userUpdateError.email = error.response.data.message;
           }
+
+          let errorMessage = ""
+          if(error.response.status === 422) {
+            errorMessage = Object.values(error.response.data.message);
+            errorMessage = errorMessage.join(',');
+          } 
+          else {
+            errorMessage = error.response.data.message
+          }
+
           Swal.fire({
-              text: error.response.data.message,
+              text: errorMessage,
               icon: "error",
               confirmButtonColor: '#3085d6',
               width: '80%',
