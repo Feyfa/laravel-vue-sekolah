@@ -8,6 +8,9 @@ export default {
     extend: {
       fontFamily: {
         'roboto': ['Roboto', 'sans-serif']
+      },
+      spacing: {
+        'screen-minus-12': 'calc(100vh - 3rem)'
       }
     },
   },
