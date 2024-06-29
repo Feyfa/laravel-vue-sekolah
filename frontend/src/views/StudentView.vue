@@ -491,7 +491,6 @@ export default {
         if(response.data.students.data.length === 0) {
           $('#empty-students').html('No Data');
           this.show.buttonPagination = false;
-          this.show.inputSearch = false;
         } 
         else {
           this.students.data = response.data.students.data;
