@@ -511,16 +511,19 @@ export default {
           keyword: this.keyword
         });
 
-        if(response.data.students.data.length === 0) {
-          $('#empty-students').html('No Data');
-          this.show.buttonPagination = false;
-        } 
-        else {
-          this.students.data = response.data.students.data;
-          this.students.last_page = response.data.students.last_page;
-          this.students.total = response.data.students.total;
-          this.students.per_page = response.data.students.per_page;
-          
+        this.students.data = response.data.students.data;
+        this.students.last_page = response.data.students.last_page;
+        this.students.total = response.data.students.total;
+        this.students.per_page = response.data.students.per_page;
+  
+        if(this.students.data.length === 0) {
+          // this.$nextTick kode di dalam callback dieksekusi setelah Vue selesai memperbarui DOM
+          this.$nextTick(() => {
+            $('#empty-students').html('No Data');
+            this.show.buttonPagination = false;
+          });
+        }
+        else {          
           this.disabled.buttonPagination = false;
           this.show.buttonPagination = true;
           this.show.inputSearch = true;
