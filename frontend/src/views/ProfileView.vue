@@ -140,12 +140,12 @@
               class="border w-full border-neutral-500 rounded outline-none py-[0.42rem] px-1.5 shadow" 
               v-model="user.jabatan" 
               :disabled="!isEdit.user">
-              <option value="Guru Kelas 1">Guru Kelas 1</option>
-              <option value="Guru Kelas 2">Guru Kelas 2</option>
-              <option value="Guru Kelas 3">Guru Kelas 3</option>
-              <option value="Guru Kelas 4">Guru Kelas 4</option>
-              <option value="Guru Kelas 5">Guru Kelas 5</option>
-              <option value="Guru Kelas 6">Guru Kelas 6</option>
+              <option value="Guru Teknik Instalasi Tenaga Listrik">Guru Teknik Instalasi Tenaga Listrik</option>
+              <option value="Guru Rekayasa Perangkat Lunak">Guru Rekayasa Perangkat Lunak</option>
+              <option value="Guru Teknik Komputer Jaringan">Guru Teknik Komputer Jaringan</option>
+              <option value="Guru Teknik Mesin">Guru Teknik Mesin</option>
+              <option value="Guru Teknik Kendaraan Ringan">Guru Teknik Kendaraan Ringan</option>
+              <option value="Guru Bisnis Sepeda Motor">Guru Bisnis Sepeda Motor</option>
             </select>
           </div>
   

@@ -11,6 +11,13 @@ use Maatwebsite\Excel\Concerns\WithLimit;
 
 class StudentsImport implements ToCollection, WithHeadingRow, WithLimit
 {
+    public function __construct(
+        public $user_id
+    )
+    {
+        
+    }
+
     public function limit(): int
     {
         return 1000;
@@ -50,6 +57,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithLimit
 
             if(!$emailDuplicateInDatabase) 
                 $students[] = [
+                    'user_id' => $this->user_id,
                     'nama' => $row['nama'],
                     'email' => $row['email'],
                     'tanggal_lahir' => $row['tanggal_lahir'],

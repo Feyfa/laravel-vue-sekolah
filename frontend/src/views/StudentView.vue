@@ -177,12 +177,9 @@
               class="outline-none w-full"
               :disabled="!(rowEdit === index)" 
               :class="{'border border-neutral-500 bg-white shadow-md rounded py-[.48rem] px-1.5': rowEdit === index}">
-              <option value="Satu">Satu</option>
-              <option value="Dua">Dua</option>
-              <option value="Tiga">Tiga</option>
-              <option value="Empat">Empat</option>
-              <option value="Lima">Lima</option>
-              <option value="Enam">Enam</option>
+              <option value="Sepuluh (10)">Sepuluh (10)</option>
+              <option value="Sebelas (11)">Sebelas (11)</option>
+              <option value="Dua Belas (12)">Dua Belas (12)</option>
             </select>
           </td>
           <td>{{ student.created_at.replace("T", " ").replace(/\.\d+Z$/, "") }}</td>
@@ -398,44 +395,46 @@ export default {
           this.disabled.buttonExport = true;
           $('#button-export').html('process...');
 
-          this.$store.dispatch('exportExcel')
-                     .then(response => {
-                      // ambil url 
-                      const url = window.URL.createObjectURL(new Blob([response.data]));
+          this.$store.dispatch('exportExcel', {
+            user_id: this.$store.getters.user.id
+          })
+          .then(response => {
+            // ambil url 
+            const url = window.URL.createObjectURL(new Blob([response.data]));
 
-                      // Membuat elemen <a> secara dinamis
-                      const link = document.createElement('a');
-                      link.href = url;
- 
-                      // Menentukan nama file yang akan diunduh
-                      link.setAttribute('download', 'students.xlsx');
+            // Membuat elemen <a> secara dinamis
+            const link = document.createElement('a');
+            link.href = url;
 
-                      // Menambahkan elemen link ke dalam body dokumen
-                      document.body.appendChild(link);
- 
-                      // Memicu klik pada link untuk memulai unduhan
-                      link.click();
+            // Menentukan nama file yang akan diunduh
+            link.setAttribute('download', 'students.xlsx');
 
-                      // Menghapus elemen link dari dokumen
-                      document.body.removeChild(link);
+            // Menambahkan elemen link ke dalam body dokumen
+            document.body.appendChild(link);
 
-                      // Membersihkan URL Blob untuk menghemat memori
-                      window.URL.revokeObjectURL(url);
+            // Memicu klik pada link untuk memulai unduhan
+            link.click();
 
-                      this.disabled.buttonExport = false;
-                      $('#button-export').html('Export');
+            // Menghapus elemen link dari dokumen
+            document.body.removeChild(link);
 
-                      this.$alert({
-                        status: 'success',
-                        message: 'Export Students Successfully'
-                      });
-                     })
-                     .catch(error => {
-                      console.error(error);
+            // Membersihkan URL Blob untuk menghemat memori
+            window.URL.revokeObjectURL(url);
 
-                      this.disabled.buttonExport = true;
-                      $('#button-export').html('process...');
-                     });
+            this.disabled.buttonExport = false;
+            $('#button-export').html('Export');
+
+            this.$alert({
+              status: 'success',
+              message: 'Export Students Successfully'
+            });
+          })
+          .catch(error => {
+            console.error(error);
+
+            this.disabled.buttonExport = true;
+            $('#button-export').html('process...');
+          });
         }
       });
     },
@@ -507,6 +506,7 @@ export default {
 
       try {
         const response = await this.$store.dispatch('getStudents', {
+          user_id: this.$store.getters.user.id,
           current_page: this.students.current_page,
           keyword: this.keyword
         });

@@ -80,6 +80,6 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        Student::factory(15)->create();
+        // Student::factory(15)->create();
     }
 }

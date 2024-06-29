@@ -13,13 +13,17 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {   
+        $user_id = $request->input('user_id', '');
         $keyword = $request->input('keyword', '');
 
-        $students = Student::where('nama', 'like', "%$keyword%")
-                           ->orWhere('email', 'like', "%$keyword%")
-                           ->orWhere('jenis_kelamin', 'like', "%$keyword%")
-                           ->orWhere('tanggal_lahir', 'like', "%$keyword%")
-                           ->orWhere('kelas', 'like', "$keyword")
+        $students = Student::where('user_id', $user_id)
+                           ->where(function ($query) use ($keyword) {
+                                $query->where('nama', 'like', "%$keyword%")
+                                      ->orWhere('email', 'like', "%$keyword%")
+                                      ->orWhere('jenis_kelamin', 'like', "%$keyword%")
+                                      ->orWhere('tanggal_lahir', 'like', "%$keyword%")
+                                      ->orWhere('kelas', 'like', "$keyword");
+                            })
                            ->latest()
                            ->paginate(10);
 
@@ -32,11 +36,12 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'user_id' => ['required', 'integer'],
             'nama' => ['required', 'string'],
             'email' => ['required', 'email', 'unique:students'],
             'tanggal_lahir' => ['required', 'date'],
             'jenis_kelamin' => ['required', 'string', 'in:Laki-Laki,Perempuan'],
-            'kelas' => ['required', 'string', 'in:Satu,Dua,Tiga,Empat,Lima,Enam'],
+            'kelas' => ['required', 'string', 'in:Sepuluh (10),Sebelas (11),Dua Belas (12)'],
         ]);
 
         if($validator->fails())
@@ -67,18 +72,29 @@ class StudentController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        /* VALIDATOR USER */
         $student = Student::where('id', $id)
                        ->first();
 
         if(!$student)
             return response()->json(['status' => 404, 'message' => 'Student Not Fond'], 404);
+        /* VALIDATOR USER */
+
+        /* IF THE EMAIL HAS BEEN USED BY OTHER PEOPLE */
+        $emailExists = Student::where('id', '<>', $id)
+                              ->where('email', $request->email)
+                              ->exists();
+
+        if($emailExists)
+            return response()->json(['status' => 409, 'message' => 'Email Has Been Used'], 409);
+        /* IF THE EMAIL HAS BEEN USED BY OTHER PEOPLE */
 
         $validator = Validator::make($request->all(), [
             'nama' => ['required', 'string'],
             'email' => ['required', 'email'],
             'tanggal_lahir' => ['required', 'date'],
             'jenis_kelamin' => ['required', 'string', 'in:Laki-Laki,Perempuan'],
-            'kelas' => ['required', 'string', 'in:Satu,Dua,Tiga,Empat,Lima,Enam'],
+            'kelas' => ['required', 'string', 'in:Sepuluh (10),Sebelas (11),Dua Belas (12)'],
         ]);
 
         

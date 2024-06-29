@@ -85,12 +85,9 @@
           id="kelas" 
           class="border w-full border-neutral-500 rounded outline-none py-[.48rem] px-1.5 shadow" 
           v-model="studentAdd.kelas">
-          <option value="Satu">Satu</option>
-          <option value="Dua">Dua</option>
-          <option value="Tiga">Tiga</option>
-          <option value="Empat">Empat</option>
-          <option value="Lima">Lima</option>
-          <option value="Enam">Enam</option>
+          <option value="Sepuluh (10)">Sepuluh (10)</option>
+          <option value="Sebelas (11)">Sebelas (11)</option>
+          <option value="Dua Belas (12)">Dua Belas (12)</option>
         </select>
       </div>
     </div>
@@ -141,7 +138,7 @@ export default {
         email: '',
         tanggal_lahir: '',
         jenis_kelamin: 'Laki-Laki',
-        kelas: 'Satu',
+        kelas: 'Sepuluh (10)',
       },
       studentAddError: {
         nama: '',
@@ -172,7 +169,7 @@ export default {
         email: '',
         tanggal_lahir: '',
         jenis_kelamin: 'Laki-Laki',
-        kelas: 'Satu',
+        kelas: 'Sepuluh (10)',
       };
 
       this.studentAddError =  {
@@ -189,7 +186,7 @@ export default {
       this.studentAdd.email = '';
       this.studentAdd.tanggal_lahir = '';
       this.studentAdd.jenis_kelamin = 'Laki-Laki';
-      this.studentAdd.kelas = 'Satu';
+      this.studentAdd.kelas = 'Sepuluh (10)';
     },
 
     addStudent() {
@@ -206,6 +203,7 @@ export default {
         this.$emit('onBeforeProcess');
 
         this.$store.dispatch('addStudent', {
+          user_id: this.$store.getters.user.id,
           nama: this.studentAdd.nama,
           email: this.studentAdd.email,
           tanggal_lahir: this.studentAdd.tanggal_lahir,

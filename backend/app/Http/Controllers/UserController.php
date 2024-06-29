@@ -112,6 +112,14 @@ class UserController extends Controller
         if($validator->fails())
             return response()->json(['status' => 422, 'message' => $validator->messages()], 422);
         /* VALIDATION USER */
+
+        /* VALIDATION JABATAN */
+        $jabatanExists = User::where('id', '<>', $id)
+                            ->where('jabatan', $request->jabatan)
+                            ->exists();
+        if($jabatanExists)
+            return response()->json(['status' => 409, 'message' => 'Jabatan Has Been Used'], 409);
+        /* VALIDATION JABATAN */
         
         $user->name = $request->name;
         $user->jenis_kelamin = $request->jenis_kelamin;

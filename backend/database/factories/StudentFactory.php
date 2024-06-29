@@ -19,11 +19,12 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => 1,
             'nama' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'tanggal_lahir' => $this->faker->date(),
             'jenis_kelamin' => $this->faker->randomElement(['Laki-Laki', 'Perempuan']),
-            'kelas' => $this->faker->randomElement(['Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam']),
+            'kelas' => $this->faker->randomElement(['Sepuluh (10)', 'Sebelas (11)', 'Dua Belas (12)']),
             'created_at' => now(),
             'updated_at' => now(),
         ];

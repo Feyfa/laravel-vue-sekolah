@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
             $table->string('nama');
             $table->string('email')->unique();
             $table->date('tanggal_lahir');
             $table->enum('jenis_kelamin', ['Laki-Laki', 'Perempuan']);
-            $table->enum('kelas', ['Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam']);
+            $table->enum('kelas', ['Sepuluh (10)', 'Sebelas (11)', 'Dua Belas (12)']);
             $table->timestamps();
         });
     }

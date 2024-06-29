@@ -38,6 +38,7 @@ export default {
 
       if(fileExtension === 'xlsx') {
         const data = new FormData();
+        data.append('user_id', this.$store.getters.user.id);
         data.append('file', file);
 
         this.disabled = true;

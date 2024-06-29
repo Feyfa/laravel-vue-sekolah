@@ -128,7 +128,7 @@ export default createStore({
 
     exportExcel(context, data) {
       return new Promise((resolve, reject) => {
-        axios.get('/students/export/excel', {
+        axios.get(`/students/export/excel?user_id=${data.user_id}`, {
           responseType: 'blob'
         })
         .then(response => {
@@ -142,7 +142,7 @@ export default createStore({
 
     getStudents(context, data) {
       return new Promise((resolve, reject) => {
-        axios.get(`/students?page=${data.current_page}&keyword=${data.keyword}`)
+        axios.get(`/students?user_id=${data.user_id}&page=${data.current_page}&keyword=${data.keyword}`)
              .then(response => {
               resolve(response);
              })
@@ -155,6 +155,7 @@ export default createStore({
     addStudent(context, data) {
       return new Promise((resolve, reject) => {
         axios.post('/students', {
+          user_id: data.user_id,
           nama: data.nama,
           email: data.email,
           tanggal_lahir: data.tanggal_lahir,
