@@ -7,15 +7,17 @@
 
     <div class="w-full flex justify-between items-start mb-2">
       <!-- pagination -->
-      <div :style="{visibility: students.data.length < 1 ? 'hidden' : 'visible' }">
+      <div :style="{visibility: show.buttonPagination ? 'visible' : 'hidden' }">
         <div>
-          <button 
+          <button
+            :disabled="disabled.buttonPagination"
             v-if="students.current_page > 1" 
             class="border border-neutral-500 cursor-pointer hover:bg-neutral-200 w-10 py-1 text-center"
             @click="setCurrentPage('prev')">
             <<
           </button>
           <button 
+            :disabled="disabled.buttonPagination"
             class="border border-neutral-500 cursor-pointer hover:bg-neutral-200 w-10 py-1 text-center" 
             :class="{
               'bg-neutral-200': getPage(1) === students.current_page,
@@ -25,6 +27,7 @@
             {{ getPage(1) }}
           </button>
           <button 
+            :disabled="disabled.buttonPagination"
             class="border border-neutral-500 cursor-pointer hover:bg-neutral-200 w-10 py-1 text-center" 
             :class="{
               'bg-neutral-200': getPage(2) === students.current_page,
@@ -34,6 +37,7 @@
             {{ getPage(2) }}
           </button>
           <button 
+            :disabled="disabled.buttonPagination"
             class="border border-neutral-500 cursor-pointer hover:bg-neutral-200 w-10 py-1 text-center" 
             :class="{
               'bg-neutral-200': getPage(3) === students.current_page,
@@ -43,6 +47,7 @@
             {{ getPage(3) }}
           </button>
           <button 
+            :disabled="disabled.buttonPagination"
             v-if="students.current_page !== students.last_page" 
             class="border border-neutral-500 cursor-pointer hover:bg-neutral-200 w-10 py-1 text-center"
             @click="setCurrentPage('next')">
@@ -57,6 +62,7 @@
 
       <!-- search -->
       <input 
+        :style="{visibility: show.inputSearch ? 'visible' : 'hidden' }"
         placeholder="seacrh"
         type="text" 
         class="border border-neutral-500 rounded outline-none py-1 px-1.5 shadow"
@@ -221,9 +227,12 @@
           </td>
         </tr>
 
-        <tr v-if="students.data.length < 1">
+        <tr v-if="students.data.length === 0">
           <td colspan="7">
-            <h1 class="text-center">Student Kosong...</h1>
+            <h1 class="text-center mt-3" id="empty-students">
+              <i class="fa-solid fa-spinner fa-spin-pulse fa-lg block mb-5"></i>
+              Loading Data...
+            </h1>
           </td>
         </tr>
       </tbody>
@@ -279,11 +288,16 @@ export default {
         buttonTambah: false,
         buttonExport: false,
         buttonImport: false,
+        buttonPagination: false,
       }, 
       modalEmailComponent: {
         show: false,
         to: '',
-      }
+      },
+      show: {
+        buttonPagination: false,
+        inputSearch: false
+      },
     }
   },
 
@@ -464,15 +478,31 @@ export default {
 
     // untuk mendapatkan semua data students
     getStudents() {
+      this.disabled.buttonPagination = true;
+      this.students.data = [];
+      $('#empty-students').html('<i class="fa-solid fa-spinner fa-spin-pulse fa-lg block mb-5"></i>Loading Data...');
+
       this.$store.dispatch('getStudents',{
         current_page: this.students.current_page,
         keyword: this.keyword
       }).then(response => {
-        this.students.data = response.data.students.data;
-        this.students.last_page = response.data.students.last_page;
-        this.students.total = response.data.students.total;
-        this.students.per_page = response.data.students.per_page;
         console.log(this.students);
+
+        if(response.data.students.data.length === 0) {
+          $('#empty-students').html('No Data');
+          this.show.buttonPagination = false;
+          this.show.inputSearch = false;
+        } 
+        else {
+          this.students.data = response.data.students.data;
+          this.students.last_page = response.data.students.last_page;
+          this.students.total = response.data.students.total;
+          this.students.per_page = response.data.students.per_page;
+          
+          this.disabled.buttonPagination = false;
+          this.show.buttonPagination = true;
+          this.show.inputSearch = true;
+        }
       }).catch(error => {
         console.error(error);
         // error ketika belum terautentikasi
