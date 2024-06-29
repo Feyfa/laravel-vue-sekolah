@@ -195,13 +195,16 @@
               </button>
 
               <form 
-                @submit.prevent="deleteStudent(student.id)" 
+                @submit.prevent="deleteStudent(student.id, index)" 
                 class="cursor-pointer" 
                 :class="{'hidden': rowEdit === index}">
-                <button type="submit">
-                  <i class="bi bi-trash3"></i>
+                <button 
+                  :disabled="isProcess.deleteStudent[index]"
+                  type="submit">
+                  <i :class="{'bi bi-trash3': !isProcess.deleteStudent[index], 'fa-solid fa-spinner fa-spin-pulse': isProcess.deleteStudent[index]}"></i>
                 </button>
               </form>
+
 
               <button 
                 @click="updateStudent(index)" 
@@ -211,8 +214,9 @@
 
               <button 
                 @click="cancelEdit(index)" 
-                :class="{'hidden': rowEdit !== index}">
-                <i class="bi bi-x-circle"></i>
+                :class="{'hidden': rowEdit !== index}"
+                :disabled="isProcess.updateStudent">
+                <i :class="{'bi bi-x-circle': !isProcess.updateStudent, 'fa-solid fa-spinner fa-spin-pulse': isProcess.updateStudent}"></i>
               </button>
             </div>
             <div class="flex items-center justify-center" :class="{'hidden': rowEdit === index}">
@@ -298,6 +302,10 @@ export default {
         buttonPagination: false,
         inputSearch: false
       },
+      isProcess: {
+        updateStudent: false,
+        deleteStudent: Array(10).fill(false)
+      }
     }
   },
 
@@ -441,6 +449,10 @@ export default {
         if(this.students.current_page > 1) {
           this.students.current_page--;
           this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
+          this.students.data = [];
+
+          $('#empty-students').html('<i class="fa-solid fa-spinner fa-spin-pulse fa-lg block mb-5"></i>Loading Data...');
+          
           this.getStudents();
           this.rowEdit = null;
           this.isClickButtonTambah = false;
@@ -450,11 +462,15 @@ export default {
         if(this.students.current_page < this.students.last_page) {
           this.students.current_page++;
           this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
-          console.log({
-            position_page_per_limit_page: this.students.position_page_per_limit_page,
-            limit_page: this.students.limit_page,
-            current_page: this.students.current_page,
-        });
+          this.students.data = [];
+          // console.log({
+          //     position_page_per_limit_page: this.students.position_page_per_limit_page,
+          //     limit_page: this.students.limit_page,
+          //     current_page: this.students.current_page,
+          // });
+
+          $('#empty-students').html('<i class="fa-solid fa-spinner fa-spin-pulse fa-lg block mb-5"></i>Loading Data...');
+          
           this.getStudents();
           this.rowEdit = null;
           this.isClickButtonTambah = false;
@@ -463,6 +479,10 @@ export default {
       else {
         this.students.current_page = page;
         this.students.position_page_per_limit_page = Math.ceil(this.students.current_page / this.students.limit_page);
+        this.students.data = [];
+        
+        $('#empty-students').html('<i class="fa-solid fa-spinner fa-spin-pulse fa-lg block mb-5"></i>Loading Data...');
+        
         this.getStudents();
         this.rowEdit = null;
         this.isClickButtonTambah = false;
@@ -471,22 +491,25 @@ export default {
 
     searchStudent(event) {
       this.keyword = event.target.value;
+      
       this.students.current_page = 1;
       this.students.position_page_per_limit_page = 1;
+      this.students.data = [];
+      
+      $('#empty-students').html('<i class="fa-solid fa-spinner fa-spin-pulse fa-lg block mb-5"></i>Loading Data...');
+      
       this.getStudents();
     },
 
     // untuk mendapatkan semua data students
-    getStudents() {
+    async getStudents() {
       this.disabled.buttonPagination = true;
-      this.students.data = [];
-      $('#empty-students').html('<i class="fa-solid fa-spinner fa-spin-pulse fa-lg block mb-5"></i>Loading Data...');
 
-      this.$store.dispatch('getStudents',{
-        current_page: this.students.current_page,
-        keyword: this.keyword
-      }).then(response => {
-        console.log(this.students);
+      try {
+        const response = await this.$store.dispatch('getStudents', {
+          current_page: this.students.current_page,
+          keyword: this.keyword
+        });
 
         if(response.data.students.data.length === 0) {
           $('#empty-students').html('No Data');
@@ -502,7 +525,8 @@ export default {
           this.show.buttonPagination = true;
           this.show.inputSearch = true;
         }
-      }).catch(error => {
+      } 
+      catch (error) {
         console.error(error);
         // error ketika belum terautentikasi
         if(error.response.status === 401) {
@@ -515,7 +539,7 @@ export default {
             this.$router.push('/login');
           });
         }
-      });
+      }
     },
 
     // ini operasi, jika icon pencil di klik
@@ -531,6 +555,8 @@ export default {
 
     // untuk update student
     updateStudent(index) {
+      this.isProcess.updateStudent = true;
+
       this.$store.dispatch('updateStudent', {
         id: this.students.data[index].id,
         nama: this.students.data[index].nama,
@@ -540,6 +566,7 @@ export default {
         kelas: this.students.data[index].kelas,
       })
       .then(response => {
+        this.isProcess.updateStudent = false;
         if(response.data.status === 200 && response.data.message === 'Student Update Successfully') {
           this.rowEdit = null;
           this.getStudents();
@@ -550,6 +577,7 @@ export default {
         }
       })
       .catch(error => {
+        this.isProcess.updateStudent = false;
         console.error(error);
         // error ketika belum terautentikasi
         if(error.response.status === 401) {
@@ -573,7 +601,7 @@ export default {
     },  
 
     // untuk delete student
-    deleteStudent(id) {
+    deleteStudent(id, index) {
       Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -584,10 +612,11 @@ export default {
         confirmButtonText: "Yes, delete it!"
       }).then((result) => {
         if (result.isConfirmed) {
+          this.isProcess.deleteStudent[index] = true;
           this.$store.dispatch('deleteStudent', {
             id
           })
-          .then(response => {
+          .then(async (response) => {
             console.log(response);
             if(response.data.status === 200 && response.data.message === 'Student Delete Successfully') {
               /* UNTUK PAGINATION SETELAH HAPUS DATA, DAN KITA BERADA DI PAGE AKHIR, MAKA KITA DIARAH KAN KE PAGE SEBELUMNYA, DAN LAKUKAN INI JIKA CURRENT PAGE ITU TIDAK SAMA DENGAN 1*/
@@ -597,7 +626,9 @@ export default {
               }
               /* UNTUK PAGINATION SETELAH HAPUS DATA, DAN KITA BERADA DI PAGE AKHIR, MAKA KITA DIARAH KAN KE PAGE SEBELUMNYA, DAN LAKUKAN INI JIKA CURRENT PAGE ITU TIDAK SAMA DENGAN 1*/
 
-              this.getStudents();
+              await this.getStudents();
+              
+              this.isProcess.deleteStudent[index] = false;
 
               this.$alert({
                 status: 'success',
@@ -607,6 +638,9 @@ export default {
           })
           .catch(error => {
             console.error(error);
+
+            this.isProcess.deleteStudent[index] = false;
+
             // error ketika belum terautentikasi
             if(error.response.status === 401) {
               Swal.fire({
