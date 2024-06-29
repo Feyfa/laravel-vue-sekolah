@@ -126,18 +126,41 @@ class UserController extends Controller
 
     public function updateEmail(Request $request, string $id)
     {
+        /* IF USER NOT FOUND */
         $user = User::where('id', $id)
                     ->first();
 
         if(!$user)
             return response()->json(['status' => 404, 'message' => 'User Not Found'], 404);
+        /* IF USER NOT FOUND */
 
+        /* VALIDATOR EMAIL */
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'string'],
         ]);
 
         if($validator->fails())
             return response()->json(['status' => 422, 'message' => $validator->messages()], 422);
+        /* VALIDATOR EMAIL */
+
+        /* IF THE EMAIL HAS BEEN USED BY OTHER PEOPLE */
+        $emailExists = User::where('id', '<>', $id)
+                           ->where('email', $request->email)
+                           ->exists();
+
+        if($emailExists)
+            return response()->json(['status' => 409, 'message' => 'Email Has Been Used'], 409);
+        /* IF THE EMAIL HAS BEEN USED BY OTHER PEOPLE */
+
+        /* IF ONLY UPDATE EMAIL */
+        if(!$request->mail_mailer && !$request->mail_host && !$request->mail_port && !$request->mail_password && !$request->mail_encryption) {
+            $result = $user->update(['email' => $request->email]);
+    
+            return $result ?
+                   response()->json(['status' => 200, 'message' => 'Email Update Successfully', 'user' => $user], 200) : 
+                   response()->json(['status' => 500, 'message' => 'Something Went Error'], 500) ;
+        }
+        /* IF ONLY UPDATE EMAIL */
 
         $emailSetting = (object) [
             'mail_host' => $request->mail_host,

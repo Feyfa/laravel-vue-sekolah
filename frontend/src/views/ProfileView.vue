@@ -618,6 +618,9 @@ export default {
         .catch(error => {
           console.error(error);
           this.loading.email = false;
+          if(error.response.status === 409) {
+            this.userUpdateError.email = error.response.data.message;
+          }
           Swal.fire({
               text: error.response.data.message,
               icon: "error",
