@@ -1,5 +1,0 @@
-{
-  "watch": ["src", "public"],
-  "ext": "js,vue,html,css",
-  "exec": "npm run build"
-}
